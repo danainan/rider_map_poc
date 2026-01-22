@@ -24,7 +24,8 @@ class _RiderMapPageState extends State<RiderMapPage> {
   void initState() {
     super.initState();
     _initializeMarkers();
-    _riderMapBloc.add(const InitializeMap());
+    // Request location permission first, then initialize with current location
+    _riderMapBloc.add(const RequestLocationPermission());
   }
 
   Future<void> _initializeMarkers() async {
@@ -41,136 +42,17 @@ class _RiderMapPageState extends State<RiderMapPage> {
     super.dispose();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    if (!_isMarkersReady) {
-      return Scaffold(
-        appBar: AppBar(
-          title: const Text('Rider Tracking'),
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        ),
-        body: const Center(child: CircularProgressIndicator()),
-      );
-    }
-
-    return BlocProvider.value(
-      value: _riderMapBloc,
-      child: _RiderMapView(
-        mapController: _mapController,
-        onMapCreated: (controller) {
-          _mapController = controller;
-        },
-      ),
-    );
-  }
-}
-
-class _RiderMapView extends StatelessWidget {
-  final GoogleMapController? mapController;
-  final void Function(GoogleMapController) onMapCreated;
-
-  const _RiderMapView({
-    required this.mapController,
-    required this.onMapCreated,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Rider Tracking'),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        elevation: 2,
-      ),
-      body: BlocConsumer<RiderMapBloc, RiderMapState>(
-        listenWhen: (previous, current) =>
-            current.cameraAction != CameraAction.none &&
-            previous.cameraAction != current.cameraAction,
-        listener: (context, state) {
-          _handleCameraAction(state);
-          // Reset camera action after handling
-          context.read<RiderMapBloc>().add(const ResetCameraAction());
-        },
-        builder: (context, state) {
-          final bloc = context.read<RiderMapBloc>();
-
-          return Stack(
-            children: [
-              // Google Map Widget (Stateless)
-              RiderMapWidget(
-                riderPosition: state.riderPosition,
-                currentRouteIndex: state.currentRouteIndex,
-                routePoints: bloc.routePoints,
-                onMapCreated: (controller) {
-                  onMapCreated(controller);
-                  bloc.add(const MapControllerReady());
-                },
-              ),
-
-              // Rider Info Card (Bottom)
-              Positioned(
-                left: 16,
-                right: 16,
-                bottom: 24,
-                child: RiderInfoCard(
-                  riderStatus: state.riderStatus,
-                  estimatedTime: state.estimatedTime,
-                  estimatedDistance: state.estimatedDistance,
-                  isSimulationRunning: state.isSimulationRunning,
-                  onStartSimulation: () {
-                    bloc.add(const StartRiderSimulation());
-                  },
-                  onStopSimulation: () {
-                    bloc.add(const StopRiderSimulation());
-                  },
-                ),
-              ),
-
-              // Map Control Buttons (Right side)
-              Positioned(
-                right: 16,
-                top: 16,
-                child: MapControlButtons(
-                  isFollowingRider: state.isFollowingRider,
-                  onCenterRider: () {
-                    bloc.add(const CenterOnRider());
-                  },
-                  onFitAll: () {
-                    bloc.add(const FitAllMarkers());
-                  },
-                  onToggleFollow: () {
-                    bloc.add(const ToggleFollowRider());
-                  },
-                ),
-              ),
-
-              // Status Badge (Top Center)
-              Positioned(
-                top: 16,
-                left: 0,
-                right: 0,
-                child: Center(
-                  child: _StatusBadge(status: state.riderStatus),
-                ),
-              ),
-            ],
-          );
-        },
-      ),
-    );
-  }
-
   void _handleCameraAction(RiderMapState state) {
-    if (mapController == null) return;
+    if (_mapController == null) return;
 
     switch (state.cameraAction) {
       case CameraAction.centerOnRider:
-        mapController!.animateCamera(
+        _mapController!.animateCamera(
           CameraUpdate.newLatLngZoom(state.riderPosition, 16),
         );
         break;
       case CameraAction.followRider:
-        mapController!.animateCamera(
+        _mapController!.animateCamera(
           CameraUpdate.newLatLng(state.riderPosition),
         );
         break;
@@ -210,8 +92,115 @@ class _RiderMapView extends StatelessWidget {
       ),
     );
 
-    mapController!.animateCamera(
+    _mapController!.animateCamera(
       CameraUpdate.newLatLngBounds(bounds, 80),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (!_isMarkersReady) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('Rider Tracking'),
+          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        ),
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    return BlocProvider.value(
+      value: _riderMapBloc,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Rider Tracking'),
+          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+          elevation: 2,
+        ),
+        body: BlocConsumer<RiderMapBloc, RiderMapState>(
+          listenWhen: (previous, current) =>
+              current.cameraAction != CameraAction.none &&
+              previous.cameraAction != current.cameraAction,
+          listener: (context, state) {
+            _handleCameraAction(state);
+            // Reset camera action after handling
+            context.read<RiderMapBloc>().add(const ResetCameraAction());
+          },
+          builder: (context, state) {
+            final bloc = context.read<RiderMapBloc>();
+
+            return Stack(
+              children: [
+                // Google Map Widget
+                RiderMapWidget(
+                  riderPosition: state.riderPosition,
+                  currentRouteIndex: state.currentRouteIndex,
+                  routePoints: bloc.routePoints,
+                  onMapCreated: (controller) {
+                    _mapController = controller;
+                    bloc.add(const MapControllerReady());
+                  },
+                ),
+
+                // Rider Info Card (Bottom)
+                Positioned(
+                  left: 16,
+                  right: 16,
+                  bottom: 24,
+                  child: RiderInfoCard(
+                    riderStatus: state.riderStatus,
+                    estimatedTime: state.estimatedTime,
+                    estimatedDistance: state.estimatedDistance,
+                    isSimulationRunning: state.isSimulationRunning,
+                    isTrackingLocation: state.isTrackingLocation,
+                    locationStatus: state.locationStatus,
+                    onStartSimulation: () {
+                      bloc.add(const StartRiderSimulation());
+                    },
+                    onStopSimulation: () {
+                      bloc.add(const StopRiderSimulation());
+                    },
+                    onStartLocationTracking: () {
+                      bloc.add(const StartLocationTracking());
+                    },
+                    onStopLocationTracking: () {
+                      bloc.add(const StopLocationTracking());
+                    },
+                  ),
+                ),
+
+                // Map Control Buttons (Right side)
+                Positioned(
+                  right: 16,
+                  top: 16,
+                  child: MapControlButtons(
+                    isFollowingRider: state.isFollowingRider,
+                    onCenterRider: () {
+                      bloc.add(const CenterOnRider());
+                    },
+                    onFitAll: () {
+                      bloc.add(const FitAllMarkers());
+                    },
+                    onToggleFollow: () {
+                      bloc.add(const ToggleFollowRider());
+                    },
+                  ),
+                ),
+
+                // Status Badge (Top Center)
+                Positioned(
+                  top: 16,
+                  left: 0,
+                  right: 0,
+                  child: Center(
+                    child: _StatusBadge(status: state.riderStatus),
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
+      ),
     );
   }
 }

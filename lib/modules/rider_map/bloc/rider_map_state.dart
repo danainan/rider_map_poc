@@ -17,6 +17,15 @@ enum CameraAction {
   followRider,
 }
 
+/// Location permission status
+enum LocationStatus {
+  initial,
+  requesting,
+  granted,
+  denied,
+  serviceDisabled,
+}
+
 /// State for RiderMapBloc - contains only DATA, no UI objects
 class RiderMapState extends Equatable {
   // Position data
@@ -28,6 +37,11 @@ class RiderMapState extends Equatable {
   final bool isSimulationRunning;
   final bool isFollowingRider;
   final bool isMapReady;
+  
+  // Location tracking
+  final bool isTrackingLocation;
+  final LocationStatus locationStatus;
+  final String? locationErrorMessage;
   
   // Display info
   final String estimatedTime;
@@ -43,6 +57,9 @@ class RiderMapState extends Equatable {
     this.isSimulationRunning = false,
     this.isFollowingRider = true,
     this.isMapReady = false,
+    this.isTrackingLocation = false,
+    this.locationStatus = LocationStatus.initial,
+    this.locationErrorMessage,
     this.estimatedTime = '8 mins',
     this.estimatedDistance = '1.2 km',
     this.cameraAction = CameraAction.none,
@@ -55,6 +72,9 @@ class RiderMapState extends Equatable {
     bool? isSimulationRunning,
     bool? isFollowingRider,
     bool? isMapReady,
+    bool? isTrackingLocation,
+    LocationStatus? locationStatus,
+    String? locationErrorMessage,
     String? estimatedTime,
     String? estimatedDistance,
     CameraAction? cameraAction,
@@ -66,6 +86,9 @@ class RiderMapState extends Equatable {
       isSimulationRunning: isSimulationRunning ?? this.isSimulationRunning,
       isFollowingRider: isFollowingRider ?? this.isFollowingRider,
       isMapReady: isMapReady ?? this.isMapReady,
+      isTrackingLocation: isTrackingLocation ?? this.isTrackingLocation,
+      locationStatus: locationStatus ?? this.locationStatus,
+      locationErrorMessage: locationErrorMessage ?? this.locationErrorMessage,
       estimatedTime: estimatedTime ?? this.estimatedTime,
       estimatedDistance: estimatedDistance ?? this.estimatedDistance,
       cameraAction: cameraAction ?? CameraAction.none,
@@ -80,6 +103,9 @@ class RiderMapState extends Equatable {
         isSimulationRunning,
         isFollowingRider,
         isMapReady,
+        isTrackingLocation,
+        locationStatus,
+        locationErrorMessage,
         estimatedTime,
         estimatedDistance,
         cameraAction,

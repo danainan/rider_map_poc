@@ -13,17 +13,46 @@ class InitializeMap extends RiderMapEvent {
   const InitializeMap();
 }
 
-/// Start rider movement simulation
+/// Request location permission and get initial position
+class RequestLocationPermission extends RiderMapEvent {
+  const RequestLocationPermission();
+}
+
+/// Start tracking real location
+class StartLocationTracking extends RiderMapEvent {
+  const StartLocationTracking();
+}
+
+/// Stop tracking real location
+class StopLocationTracking extends RiderMapEvent {
+  const StopLocationTracking();
+}
+
+/// Update rider position from GPS
+class UpdateRiderLocationFromGPS extends RiderMapEvent {
+  final double latitude;
+  final double longitude;
+
+  const UpdateRiderLocationFromGPS({
+    required this.latitude,
+    required this.longitude,
+  });
+
+  @override
+  List<Object?> get props => [latitude, longitude];
+}
+
+/// Start rider movement simulation (mock)
 class StartRiderSimulation extends RiderMapEvent {
   const StartRiderSimulation();
 }
 
-/// Stop rider movement simulation
+/// Stop rider movement simulation (mock)
 class StopRiderSimulation extends RiderMapEvent {
   const StopRiderSimulation();
 }
 
-/// Update rider position (called by timer)
+/// Update rider position (called by timer for simulation)
 class UpdateRiderPosition extends RiderMapEvent {
   const UpdateRiderPosition();
 }
