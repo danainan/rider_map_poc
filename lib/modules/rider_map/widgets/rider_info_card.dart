@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:rider_map_poc/modules/rider_map/bloc/rider_map_state.dart';
+import 'package:rider_map_poc/modules/rider_map/bloc/rider_map_bloc.dart';
 
 class RiderInfoCard extends StatelessWidget {
   final RiderStatus riderStatus;

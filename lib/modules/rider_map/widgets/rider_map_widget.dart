@@ -41,7 +41,7 @@ class MapMarkerIcons {
   static Future<BitmapDescriptor> _createMarkerIcon({
     required IconData icon,
     required Color backgroundColor,
-    double size = 80,
+    double size = 60,
   }) async {
     final pictureRecorder = ui.PictureRecorder();
     final canvas = Canvas(pictureRecorder);

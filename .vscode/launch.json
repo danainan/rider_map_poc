@@ -8,40 +8,5 @@
       "program": "lib/main.dart",
       "args": ["--debug"]
     },
-    {
-      "name": "rider_map_poc (profile)",
-      "request": "launch",
-      "type": "dart",
-      "program": "lib/main.dart",
-      "args": ["--profile"]
-    },
-    {
-      "name": "rider_map_poc (release)",
-      "request": "launch",
-      "type": "dart",
-      "program": "lib/main.dart",
-      "args": ["--release"]
-    },
-    {
-      "name": "rider_map_poc (iOS Simulator)",
-      "request": "launch",
-      "type": "dart",
-      "program": "lib/main.dart",
-      "deviceId": "iPhone"
-    },
-    {
-      "name": "rider_map_poc (Android)",
-      "request": "launch",
-      "type": "dart",
-      "program": "lib/main.dart",
-      "deviceId": "android"
-    },
-    {
-      "name": "rider_map_poc (Chrome)",
-      "request": "launch",
-      "type": "dart",
-      "program": "lib/main.dart",
-      "deviceId": "chrome"
-    }
   ]
 }

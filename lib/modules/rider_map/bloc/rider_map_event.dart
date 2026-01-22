@@ -1,4 +1,4 @@
-import 'package:equatable/equatable.dart';
+part of 'rider_map_bloc.dart';
 
 /// Events for RiderMapBloc
 abstract class RiderMapEvent extends Equatable {

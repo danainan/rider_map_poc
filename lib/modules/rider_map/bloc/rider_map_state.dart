@@ -1,5 +1,4 @@
-import 'package:equatable/equatable.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+part of 'rider_map_bloc.dart';
 
 /// Rider delivery status
 enum RiderStatus {

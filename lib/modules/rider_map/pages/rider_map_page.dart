@@ -3,8 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:rider_map_poc/core/di/injectable.dart';
 import 'package:rider_map_poc/modules/rider_map/bloc/rider_map_bloc.dart';
-import 'package:rider_map_poc/modules/rider_map/bloc/rider_map_event.dart';
-import 'package:rider_map_poc/modules/rider_map/bloc/rider_map_state.dart';
 import 'package:rider_map_poc/modules/rider_map/data/mock_route_data.dart';
 import 'package:rider_map_poc/modules/rider_map/widgets/map_control_buttons.dart';
 import 'package:rider_map_poc/modules/rider_map/widgets/rider_info_card.dart';
@@ -19,13 +17,21 @@ class RiderMapPage extends StatefulWidget {
 
 class _RiderMapPageState extends State<RiderMapPage> {
   GoogleMapController? _mapController;
-  late final RiderMapBloc _riderMapBloc;
+  final RiderMapBloc _riderMapBloc = getIt<RiderMapBloc>();
+  bool _isMarkersReady = false;
 
   @override
   void initState() {
     super.initState();
-    _riderMapBloc = getIt<RiderMapBloc>();
+    _initializeMarkers();
     _riderMapBloc.add(const InitializeMap());
+  }
+
+  Future<void> _initializeMarkers() async {
+    await MapMarkerIcons.initialize();
+    if (mounted) {
+      setState(() => _isMarkersReady = true);
+    }
   }
 
   @override
@@ -37,6 +43,16 @@ class _RiderMapPageState extends State<RiderMapPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (!_isMarkersReady) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('Rider Tracking'),
+          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        ),
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
+
     return BlocProvider.value(
       value: _riderMapBloc,
       child: _RiderMapView(

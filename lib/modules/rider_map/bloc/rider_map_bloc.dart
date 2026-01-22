@@ -1,11 +1,13 @@
 import 'dart:async';
 
+import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:injectable/injectable.dart';
 import 'package:rider_map_poc/modules/rider_map/data/mock_route_data.dart';
-import 'package:rider_map_poc/modules/rider_map/bloc/rider_map_event.dart';
-import 'package:rider_map_poc/modules/rider_map/bloc/rider_map_state.dart';
+
+part 'rider_map_event.dart';
+part 'rider_map_state.dart';
 
 @injectable
 class RiderMapBloc extends Bloc<RiderMapEvent, RiderMapState> {
