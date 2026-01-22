@@ -18,7 +18,7 @@ class _SplashPageState extends State<SplashPage> {
   }
 
   Future<void> _navigateToHome() async {
-    await Future.delayed(const Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 1));
     if (mounted) {
       // ignore: use_build_context_synchronously
       context.go(Routes.home);

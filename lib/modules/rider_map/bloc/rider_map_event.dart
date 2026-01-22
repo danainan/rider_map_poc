@@ -47,3 +47,8 @@ class ToggleFollowRider extends RiderMapEvent {
 class MapControllerReady extends RiderMapEvent {
   const MapControllerReady();
 }
+
+/// Reset camera action after it was handled by UI
+class ResetCameraAction extends RiderMapEvent {
+  const ResetCameraAction();
+}

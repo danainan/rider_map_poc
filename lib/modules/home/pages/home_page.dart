@@ -19,24 +19,6 @@ class HomePage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const SizedBox(height: 24),
-            const Text(
-              'Welcome to Rider Map POC',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 16),
-            const Text(
-              'A proof of concept for rider tracking with Google Maps integration.',
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.grey,
-              ),
-              textAlign: TextAlign.center,
-            ),
             const SizedBox(height: 48),
             _MenuCard(
               icon: Icons.map,
@@ -44,26 +26,7 @@ class HomePage extends StatelessWidget {
               subtitle: 'View rider location on map',
               onTap: () => context.push(Routes.riderMap),
             ),
-            const SizedBox(height: 16),
-            _MenuCard(
-              icon: Icons.local_shipping,
-              title: 'Track Order',
-              subtitle: 'Track your delivery in real-time',
-              onTap: () => context.push(
-                Routes.riderMapTracking,
-                extra: 'ORDER-12345',
-              ),
-            ),
-            const Spacer(),
-            const Text(
-              'Version 1.0.0',
-              style: TextStyle(
-                fontSize: 12,
-                color: Colors.grey,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 16),
+            const Spacer(),         
           ],
         ),
       ),

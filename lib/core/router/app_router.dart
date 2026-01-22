@@ -49,17 +49,6 @@ final class AppRouter {
           child: const RiderMapPage(),
         ),
       ),
-      GoRoute(
-        path: Routes.riderMapTracking,
-        pageBuilder: (context, state) {
-          final orderId = state.extra as String?;
-          return _slideTransitionPage(
-            context: context,
-            state: state,
-            child: RiderMapPage(orderId: orderId),
-          );
-        },
-      ),
     ],
   );
 
