@@ -48,3 +48,6 @@ app.*.map.json
 **/ios/Runner/Secrets.xcconfig
 **/android/local.properties
 **/android/key.properties
+
+# FVM Version Cache
+.fvm/

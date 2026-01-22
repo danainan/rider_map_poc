@@ -6,7 +6,6 @@ import 'package:injectable/injectable.dart';
 import 'package:rider_map_poc/modules/rider_map/data/mock_route_data.dart';
 import 'package:rider_map_poc/modules/rider_map/bloc/rider_map_event.dart';
 import 'package:rider_map_poc/modules/rider_map/bloc/rider_map_state.dart';
-import 'package:rider_map_poc/modules/rider_map/widgets/rider_map_widget.dart';
 
 @injectable
 class RiderMapBloc extends Bloc<RiderMapEvent, RiderMapState> {
@@ -15,7 +14,6 @@ class RiderMapBloc extends Bloc<RiderMapEvent, RiderMapState> {
 
   RiderMapBloc() : super(const RiderMapState()) {
     on<InitializeMap>(_onInitializeMap);
-    on<LoadMarkerIcons>(_onLoadMarkerIcons);
     on<StartRiderSimulation>(_onStartRiderSimulation);
     on<StopRiderSimulation>(_onStopRiderSimulation);
     on<UpdateRiderPosition>(_onUpdateRiderPosition);
@@ -45,15 +43,6 @@ class RiderMapBloc extends Bloc<RiderMapEvent, RiderMapState> {
       estimatedTime: MockRouteData.getEstimatedTime(),
       estimatedDistance: MockRouteData.getEstimatedDistance(),
     ));
-  }
-
-  Future<void> _onLoadMarkerIcons(
-    LoadMarkerIcons event,
-    Emitter<RiderMapState> emit,
-  ) async {
-    if (state.markerIcons != null) return;
-    final icons = await MapMarkerIcons.create();
-    emit(state.copyWith(markerIcons: icons));
   }
 
   void _onStartRiderSimulation(

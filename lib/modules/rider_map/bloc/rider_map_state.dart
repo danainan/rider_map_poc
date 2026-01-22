@@ -1,6 +1,5 @@
 import 'package:equatable/equatable.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:rider_map_poc/modules/rider_map/widgets/rider_map_widget.dart';
 
 /// Rider delivery status
 enum RiderStatus {
@@ -37,9 +36,6 @@ class RiderMapState extends Equatable {
   
   // Camera action for UI to handle
   final CameraAction cameraAction;
-  
-  // Marker icons
-  final MapMarkerIcons? markerIcons;
 
   const RiderMapState({
     this.riderPosition = const LatLng(13.7433, 100.5311),
@@ -51,7 +47,6 @@ class RiderMapState extends Equatable {
     this.estimatedTime = '8 mins',
     this.estimatedDistance = '1.2 km',
     this.cameraAction = CameraAction.none,
-    this.markerIcons,
   });
 
   RiderMapState copyWith({
@@ -64,7 +59,6 @@ class RiderMapState extends Equatable {
     String? estimatedTime,
     String? estimatedDistance,
     CameraAction? cameraAction,
-    MapMarkerIcons? markerIcons,
   }) {
     return RiderMapState(
       riderPosition: riderPosition ?? this.riderPosition,
@@ -76,7 +70,6 @@ class RiderMapState extends Equatable {
       estimatedTime: estimatedTime ?? this.estimatedTime,
       estimatedDistance: estimatedDistance ?? this.estimatedDistance,
       cameraAction: cameraAction ?? CameraAction.none,
-      markerIcons: markerIcons ?? this.markerIcons,
     );
   }
 
@@ -91,6 +84,5 @@ class RiderMapState extends Equatable {
         estimatedTime,
         estimatedDistance,
         cameraAction,
-        markerIcons,
       ];
 }

@@ -24,9 +24,8 @@ class _RiderMapPageState extends State<RiderMapPage> {
   @override
   void initState() {
     super.initState();
-    _riderMapBloc = getIt<RiderMapBloc>()
-      ..add(const InitializeMap())
-      ..add(const LoadMarkerIcons());
+    _riderMapBloc = getIt<RiderMapBloc>();
+    _riderMapBloc.add(const InitializeMap());
   }
 
   @override
@@ -40,24 +39,10 @@ class _RiderMapPageState extends State<RiderMapPage> {
   Widget build(BuildContext context) {
     return BlocProvider.value(
       value: _riderMapBloc,
-      child: BlocBuilder<RiderMapBloc, RiderMapState>(
-        buildWhen: (previous, current) => previous.markerIcons != current.markerIcons,
-        builder: (context, state) {
-          return state.markerIcons == null
-              ? Scaffold(
-                  appBar: AppBar(
-                    title: const Text('Rider Tracking'),
-                    backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-                  ),
-                  body: const Center(child: CircularProgressIndicator()),
-                )
-              : _RiderMapView(
-                  markerIcons: state.markerIcons!,
-                  mapController: _mapController,
-                  onMapCreated: (controller) {
-                    _mapController = controller;
-                  },
-                );
+      child: _RiderMapView(
+        mapController: _mapController,
+        onMapCreated: (controller) {
+          _mapController = controller;
         },
       ),
     );
@@ -65,12 +50,10 @@ class _RiderMapPageState extends State<RiderMapPage> {
 }
 
 class _RiderMapView extends StatelessWidget {
-  final MapMarkerIcons markerIcons;
   final GoogleMapController? mapController;
   final void Function(GoogleMapController) onMapCreated;
 
   const _RiderMapView({
-    required this.markerIcons,
     required this.mapController,
     required this.onMapCreated,
   });
@@ -102,7 +85,6 @@ class _RiderMapView extends StatelessWidget {
                 riderPosition: state.riderPosition,
                 currentRouteIndex: state.currentRouteIndex,
                 routePoints: bloc.routePoints,
-                markerIcons: markerIcons,
                 onMapCreated: (controller) {
                   onMapCreated(controller);
                   bloc.add(const MapControllerReady());

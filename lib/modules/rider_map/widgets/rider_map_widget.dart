@@ -4,87 +4,75 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:rider_map_poc/modules/rider_map/data/mock_route_data.dart';
 
-/// Marker icons holder - initialized once in parent page
+/// Custom marker icons - วาดด้วย Canvas
 class MapMarkerIcons {
-  final BitmapDescriptor riderIcon;
-  final BitmapDescriptor pickupIcon;
-  final BitmapDescriptor deliveryIcon;
+  static BitmapDescriptor? _riderIcon;
+  static BitmapDescriptor? _pickupIcon;
+  static BitmapDescriptor? _deliveryIcon;
 
-  const MapMarkerIcons({
-    required this.riderIcon,
-    required this.pickupIcon,
-    required this.deliveryIcon,
-  });
+  /// Rider marker - มอเตอร์ไซค์สีฟ้า
+  static BitmapDescriptor get riderIcon => _riderIcon ?? BitmapDescriptor.defaultMarker;
 
-  /// Create custom marker icons asynchronously
-  static Future<MapMarkerIcons> create() async {
-    final riderIcon = await _createCustomMarkerBitmap(
+  /// Pickup marker - ร้านค้าสีส้ม
+  static BitmapDescriptor get pickupIcon => _pickupIcon ?? BitmapDescriptor.defaultMarker;
+
+  /// Delivery marker - ธงสีเขียว
+  static BitmapDescriptor get deliveryIcon => _deliveryIcon ?? BitmapDescriptor.defaultMarker;
+
+  /// โหลด icons ทั้งหมด (เรียกครั้งเดียวตอน app start)
+  static Future<void> initialize() async {
+    if (_riderIcon != null) return; // Already initialized
+
+    _riderIcon = await _createMarkerIcon(
       icon: Icons.two_wheeler,
-      color: Colors.blue,
-      size: 60,
+      backgroundColor: Colors.blue,
     );
-    final pickupIcon = await _createCustomMarkerBitmap(
+    _pickupIcon = await _createMarkerIcon(
       icon: Icons.store,
-      color: Colors.orange,
-      size: 60,
+      backgroundColor: Colors.orange,
     );
-    final deliveryIcon = await _createCustomMarkerBitmap(
+    _deliveryIcon = await _createMarkerIcon(
       icon: Icons.flag,
-      color: Colors.green,
-      size: 60,
-    );
-    return MapMarkerIcons(
-      riderIcon: riderIcon,
-      pickupIcon: pickupIcon,
-      deliveryIcon: deliveryIcon,
+      backgroundColor: Colors.green,
     );
   }
 
-  static Future<BitmapDescriptor> _createCustomMarkerBitmap({
+  /// สร้าง marker icon จาก Material Icon
+  static Future<BitmapDescriptor> _createMarkerIcon({
     required IconData icon,
-    required Color color,
-    required double size,
+    required Color backgroundColor,
+    double size = 80,
   }) async {
     final pictureRecorder = ui.PictureRecorder();
     final canvas = Canvas(pictureRecorder);
-    final paint = Paint()..color = color;
 
-    // Draw circle background
-    canvas.drawCircle(
-      Offset(size / 2, size / 2),
-      size / 2,
-      paint,
-    );
+    // วาดพื้นหลังวงกลม
+    final bgPaint = Paint()..color = backgroundColor;
+    canvas.drawCircle(Offset(size / 2, size / 2), size / 2, bgPaint);
 
-    // Draw white border
+    // วาดขอบขาว
     final borderPaint = Paint()
       ..color = Colors.white
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 3;
-    canvas.drawCircle(
-      Offset(size / 2, size / 2),
-      size / 2 - 2,
-      borderPaint,
-    );
+      ..strokeWidth = 4;
+    canvas.drawCircle(Offset(size / 2, size / 2), size / 2 - 2, borderPaint);
 
-    // Draw icon
-    final textPainter = TextPainter(textDirection: TextDirection.ltr);
-    textPainter.text = TextSpan(
-      text: String.fromCharCode(icon.codePoint),
-      style: TextStyle(
-        fontSize: size * 0.5,
-        fontFamily: icon.fontFamily,
-        package: icon.fontPackage,
-        color: Colors.white,
-      ),
-    );
-    textPainter.layout();
+    // วาด icon
+    final textPainter = TextPainter(textDirection: TextDirection.ltr)
+      ..text = TextSpan(
+        text: String.fromCharCode(icon.codePoint),
+        style: TextStyle(
+          fontSize: size * 0.5,
+          fontFamily: icon.fontFamily,
+          package: icon.fontPackage,
+          color: Colors.white,
+        ),
+      )
+      ..layout();
+
     textPainter.paint(
       canvas,
-      Offset(
-        (size - textPainter.width) / 2,
-        (size - textPainter.height) / 2,
-      ),
+      Offset((size - textPainter.width) / 2, (size - textPainter.height) / 2),
     );
 
     final picture = pictureRecorder.endRecording();
@@ -95,12 +83,23 @@ class MapMarkerIcons {
   }
 }
 
+/// Default polyline styles
+class MapPolylineStyles {
+  /// เส้นทางที่เหลือ - สีฟ้า
+  static const Color remainingRouteColor = Colors.blue;
+
+  /// เส้นทางที่ผ่านมาแล้ว - สีเทา
+  static final Color traveledRouteColor = Colors.grey.shade400;
+
+  /// ความหนาของเส้น
+  static const int polylineWidth = 5;
+}
+
 /// Stateless widget that displays the Google Map with markers and polylines
 class RiderMapWidget extends StatefulWidget {
   final LatLng riderPosition;
   final int currentRouteIndex;
   final List<LatLng> routePoints;
-  final MapMarkerIcons markerIcons;
   final void Function(GoogleMapController) onMapCreated;
 
   const RiderMapWidget({
@@ -108,7 +107,6 @@ class RiderMapWidget extends StatefulWidget {
     required this.riderPosition,
     required this.currentRouteIndex,
     required this.routePoints,
-    required this.markerIcons,
     required this.onMapCreated,
   });
 
@@ -142,7 +140,7 @@ class _RiderMapWidgetState extends State<RiderMapWidget> {
       Marker(
         markerId: const MarkerId('rider'),
         position: widget.riderPosition,
-        icon: widget.markerIcons.riderIcon,
+        icon: MapMarkerIcons.riderIcon,
         anchor: const Offset(0.5, 0.5),
         zIndex: 3,
         infoWindow: const InfoWindow(title: 'Rider'),
@@ -150,7 +148,7 @@ class _RiderMapWidgetState extends State<RiderMapWidget> {
       Marker(
         markerId: const MarkerId('pickup'),
         position: MockRouteData.pickupLocation,
-        icon: widget.markerIcons.pickupIcon,
+        icon: MapMarkerIcons.pickupIcon,
         infoWindow: const InfoWindow(
           title: 'Pickup Point',
           snippet: 'Siam Paragon',
@@ -160,7 +158,7 @@ class _RiderMapWidgetState extends State<RiderMapWidget> {
       Marker(
         markerId: const MarkerId('delivery'),
         position: MockRouteData.deliveryLocation,
-        icon: widget.markerIcons.deliveryIcon,
+        icon: MapMarkerIcons.deliveryIcon,
         infoWindow: const InfoWindow(
           title: 'Delivery Point',
           snippet: 'Central World',
@@ -178,14 +176,14 @@ class _RiderMapWidgetState extends State<RiderMapWidget> {
       Polyline(
         polylineId: const PolylineId('route'),
         points: remainingPoints,
-        color: Colors.blue.shade600,
-        width: 5,
+        color: MapPolylineStyles.remainingRouteColor,
+        width: MapPolylineStyles.polylineWidth,
       ),
       Polyline(
         polylineId: const PolylineId('traveled'),
         points: traveledPoints,
-        color: Colors.grey.shade400,
-        width: 5,
+        color: MapPolylineStyles.traveledRouteColor,
+        width: MapPolylineStyles.polylineWidth,
       ),
     };
   }
