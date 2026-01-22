@@ -96,7 +96,7 @@ class MapMarkerIcons {
 }
 
 /// Stateless widget that displays the Google Map with markers and polylines
-class RiderMapWidget extends StatelessWidget {
+class RiderMapWidget extends StatefulWidget {
   final LatLng riderPosition;
   final int currentRouteIndex;
   final List<LatLng> routePoints;
@@ -113,8 +113,16 @@ class RiderMapWidget extends StatelessWidget {
   });
 
   @override
+  State<RiderMapWidget> createState() => _RiderMapWidgetState();
+}
+
+class _RiderMapWidgetState extends State<RiderMapWidget> {
+  final _mapKey = UniqueKey();
+
+  @override
   Widget build(BuildContext context) {
     return GoogleMap(
+      key: _mapKey,
       initialCameraPosition: const CameraPosition(
         target: MockRouteData.riderStartPosition,
         zoom: 15,
@@ -125,7 +133,7 @@ class RiderMapWidget extends StatelessWidget {
       myLocationButtonEnabled: false,
       zoomControlsEnabled: false,
       mapToolbarEnabled: false,
-      onMapCreated: onMapCreated,
+      onMapCreated: widget.onMapCreated,
     );
   }
 
@@ -133,8 +141,8 @@ class RiderMapWidget extends StatelessWidget {
     return {
       Marker(
         markerId: const MarkerId('rider'),
-        position: riderPosition,
-        icon: markerIcons.riderIcon,
+        position: widget.riderPosition,
+        icon: widget.markerIcons.riderIcon,
         anchor: const Offset(0.5, 0.5),
         zIndex: 3,
         infoWindow: const InfoWindow(title: 'Rider'),
@@ -142,7 +150,7 @@ class RiderMapWidget extends StatelessWidget {
       Marker(
         markerId: const MarkerId('pickup'),
         position: MockRouteData.pickupLocation,
-        icon: markerIcons.pickupIcon,
+        icon: widget.markerIcons.pickupIcon,
         infoWindow: const InfoWindow(
           title: 'Pickup Point',
           snippet: 'Siam Paragon',
@@ -152,7 +160,7 @@ class RiderMapWidget extends StatelessWidget {
       Marker(
         markerId: const MarkerId('delivery'),
         position: MockRouteData.deliveryLocation,
-        icon: markerIcons.deliveryIcon,
+        icon: widget.markerIcons.deliveryIcon,
         infoWindow: const InfoWindow(
           title: 'Delivery Point',
           snippet: 'Central World',
@@ -163,8 +171,8 @@ class RiderMapWidget extends StatelessWidget {
   }
 
   Set<Polyline> _buildPolylines() {
-    final traveledPoints = routePoints.sublist(0, currentRouteIndex + 1);
-    final remainingPoints = routePoints.sublist(currentRouteIndex);
+    final traveledPoints = widget.routePoints.sublist(0, widget.currentRouteIndex + 1);
+    final remainingPoints = widget.routePoints.sublist(widget.currentRouteIndex);
 
     return {
       Polyline(

@@ -2,17 +2,20 @@ import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:injectable/injectable.dart';
 import 'package:rider_map_poc/modules/rider_map/data/mock_route_data.dart';
 import 'package:rider_map_poc/modules/rider_map/bloc/rider_map_event.dart';
 import 'package:rider_map_poc/modules/rider_map/bloc/rider_map_state.dart';
+import 'package:rider_map_poc/modules/rider_map/widgets/rider_map_widget.dart';
 
-/// BLoC for rider map - contains only BUSINESS LOGIC, no UI
+@injectable
 class RiderMapBloc extends Bloc<RiderMapEvent, RiderMapState> {
   Timer? _simulationTimer;
   final List<LatLng> _routePoints = MockRouteData.getMockRoutePoints();
 
   RiderMapBloc() : super(const RiderMapState()) {
     on<InitializeMap>(_onInitializeMap);
+    on<LoadMarkerIcons>(_onLoadMarkerIcons);
     on<StartRiderSimulation>(_onStartRiderSimulation);
     on<StopRiderSimulation>(_onStopRiderSimulation);
     on<UpdateRiderPosition>(_onUpdateRiderPosition);
@@ -42,6 +45,15 @@ class RiderMapBloc extends Bloc<RiderMapEvent, RiderMapState> {
       estimatedTime: MockRouteData.getEstimatedTime(),
       estimatedDistance: MockRouteData.getEstimatedDistance(),
     ));
+  }
+
+  Future<void> _onLoadMarkerIcons(
+    LoadMarkerIcons event,
+    Emitter<RiderMapState> emit,
+  ) async {
+    if (state.markerIcons != null) return;
+    final icons = await MapMarkerIcons.create();
+    emit(state.copyWith(markerIcons: icons));
   }
 
   void _onStartRiderSimulation(

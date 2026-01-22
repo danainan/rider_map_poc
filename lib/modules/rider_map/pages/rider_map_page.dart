@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:rider_map_poc/core/di/injectable.dart';
 import 'package:rider_map_poc/modules/rider_map/bloc/rider_map_bloc.dart';
 import 'package:rider_map_poc/modules/rider_map/bloc/rider_map_event.dart';
 import 'package:rider_map_poc/modules/rider_map/bloc/rider_map_state.dart';
@@ -17,40 +18,46 @@ class RiderMapPage extends StatefulWidget {
 }
 
 class _RiderMapPageState extends State<RiderMapPage> {
-  MapMarkerIcons? _markerIcons;
   GoogleMapController? _mapController;
+  late final RiderMapBloc _riderMapBloc;
 
   @override
   void initState() {
     super.initState();
-    _initializeMarkerIcons();
+    _riderMapBloc = getIt<RiderMapBloc>()
+      ..add(const InitializeMap())
+      ..add(const LoadMarkerIcons());
   }
 
-  Future<void> _initializeMarkerIcons() async {
-    final icons = await MapMarkerIcons.create();
-    setState(() => _markerIcons = icons);
+  @override
+  void dispose() {
+    _mapController?.dispose();
+    _riderMapBloc.close();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    // Show loading while marker icons are being created
-    if (_markerIcons == null) {
-      return Scaffold(
-        appBar: AppBar(
-          title: const Text('Rider Tracking'),
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        ),
-        body: const Center(child: CircularProgressIndicator()),
-      );
-    }
-
-    return BlocProvider(
-      create: (context) => RiderMapBloc()..add(const InitializeMap()),
-      child: _RiderMapView(
-        markerIcons: _markerIcons!,
-        mapController: _mapController,
-        onMapCreated: (controller) {
-          _mapController = controller;
+    return BlocProvider.value(
+      value: _riderMapBloc,
+      child: BlocBuilder<RiderMapBloc, RiderMapState>(
+        buildWhen: (previous, current) => previous.markerIcons != current.markerIcons,
+        builder: (context, state) {
+          return state.markerIcons == null
+              ? Scaffold(
+                  appBar: AppBar(
+                    title: const Text('Rider Tracking'),
+                    backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+                  ),
+                  body: const Center(child: CircularProgressIndicator()),
+                )
+              : _RiderMapView(
+                  markerIcons: state.markerIcons!,
+                  mapController: _mapController,
+                  onMapCreated: (controller) {
+                    _mapController = controller;
+                  },
+                );
         },
       ),
     );

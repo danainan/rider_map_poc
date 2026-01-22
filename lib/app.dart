@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:rider_map_poc/core/di/injectable.dart';
 import 'package:rider_map_poc/core/router/app_router.dart';
 import 'package:rider_map_poc/core/theme/app_theme.dart';
 
@@ -22,6 +21,8 @@ class RiderMapApp extends StatelessWidget {
           AppTheme.light,
         ],
       ),
+
     );
   }
 }
+

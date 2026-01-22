@@ -13,6 +13,11 @@ class InitializeMap extends RiderMapEvent {
   const InitializeMap();
 }
 
+/// Load marker icons
+class LoadMarkerIcons extends RiderMapEvent {
+  const LoadMarkerIcons();
+}
+
 /// Start rider movement simulation
 class StartRiderSimulation extends RiderMapEvent {
   const StartRiderSimulation();
