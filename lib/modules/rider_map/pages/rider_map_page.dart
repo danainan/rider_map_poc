@@ -152,19 +152,14 @@ class _RiderMapPageState extends State<RiderMapPage> {
                     estimatedTime: state.estimatedTime,
                     estimatedDistance: state.estimatedDistance,
                     isSimulationRunning: state.isSimulationRunning,
-                    isTrackingLocation: state.isTrackingLocation,
-                    locationStatus: state.locationStatus,
                     onStartSimulation: () {
                       bloc.add(const StartRiderSimulation());
                     },
                     onStopSimulation: () {
                       bloc.add(const StopRiderSimulation());
                     },
-                    onStartLocationTracking: () {
-                      bloc.add(const StartLocationTracking());
-                    },
-                    onStopLocationTracking: () {
-                      bloc.add(const StopLocationTracking());
+                    onCenterRider: () {
+                      bloc.add(const CenterOnRider());
                     },
                   ),
                 ),

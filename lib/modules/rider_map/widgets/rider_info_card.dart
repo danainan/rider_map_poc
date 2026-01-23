@@ -6,12 +6,9 @@ class RiderInfoCard extends StatelessWidget {
   final String estimatedTime;
   final String estimatedDistance;
   final bool isSimulationRunning;
-  final bool isTrackingLocation;
-  final LocationStatus locationStatus;
   final VoidCallback onStartSimulation;
   final VoidCallback onStopSimulation;
-  final VoidCallback onStartLocationTracking;
-  final VoidCallback onStopLocationTracking;
+  final VoidCallback onCenterRider;
 
   const RiderInfoCard({
     super.key,
@@ -19,12 +16,9 @@ class RiderInfoCard extends StatelessWidget {
     required this.estimatedTime,
     required this.estimatedDistance,
     required this.isSimulationRunning,
-    required this.isTrackingLocation,
-    required this.locationStatus,
     required this.onStartSimulation,
     required this.onStopSimulation,
-    required this.onStartLocationTracking,
-    required this.onStopLocationTracking,
+    required this.onCenterRider,
   });
 
   @override
@@ -149,35 +143,24 @@ class RiderInfoCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 16),
-            // Location Tracking button
-            if (locationStatus == LocationStatus.granted) ...[
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  onPressed: isTrackingLocation
-                      ? onStopLocationTracking
-                      : onStartLocationTracking,
-                  icon: Icon(
-                    isTrackingLocation ? Icons.location_off : Icons.my_location,
-                  ),
-                  label: Text(
-                    isTrackingLocation
-                        ? 'Stop GPS Tracking'
-                        : 'Start GPS Tracking',
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        isTrackingLocation ? Colors.red : Colors.teal,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
+            // Center on Rider button
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: onCenterRider,
+                icon: const Icon(Icons.my_location),
+                label: const Text('Center on Rider'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.teal,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
                   ),
                 ),
               ),
-              const SizedBox(height: 8),
-            ],
+            ),
+            const SizedBox(height: 8),
             // Simulation control button
             SizedBox(
               width: double.infinity,
