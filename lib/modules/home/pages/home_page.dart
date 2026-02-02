@@ -26,6 +26,13 @@ class HomePage extends StatelessWidget {
               subtitle: 'View rider location on map',
               onTap: () => context.push(Routes.riderMap),
             ),
+            const SizedBox(height: 16),
+            _MenuCard(
+              icon: Icons.route,
+              title: 'Route Navigation',
+              subtitle: 'Navigate with Routes API (Rider → Restaurant → Customer)',
+              onTap: () => context.push(Routes.routeNavigation),
+            ),
             const Spacer(),         
           ],
         ),

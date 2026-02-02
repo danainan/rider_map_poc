@@ -89,7 +89,7 @@ class _RiderMapPageState extends State<RiderMapPage> with WidgetsBindingObserver
             children: [
               Icon(Icons.location_off, color: Colors.orange),
               SizedBox(width: 8),
-              Text('Location Service ปิดอยู่'),
+              Text('Location ปิดอยู่'),
             ],
           ),
           content: const Text(

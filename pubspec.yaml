@@ -16,7 +16,8 @@ dependencies:
   google_maps_flutter: ^2.9.0
   
   # Route drawing
-  flutter_polyline_points: ^2.1.0
+  flutter_polyline_points: ^1.0.0
+  google_maps_routes: ^1.1.0
   
   # State Management
   flutter_bloc: ^8.1.6

@@ -28,8 +28,14 @@ import 'package:rider_map_poc/data/services/permission_status/app_permission_sta
     as _i537;
 import 'package:rider_map_poc/data/services/permission_status/app_permission_status_service_impl.dart'
     as _i161;
+import 'package:rider_map_poc/data/services/routes/routes_service.dart'
+    as _i857;
+import 'package:rider_map_poc/data/services/routes/routes_service_impl.dart'
+    as _i211;
 import 'package:rider_map_poc/modules/rider_map/bloc/rider_map_bloc.dart'
     as _i916;
+import 'package:rider_map_poc/modules/route_navigation/bloc/route_navigation_bloc.dart'
+    as _i51;
 
 extension GetItInjectableX on _i174.GetIt {
 // initializes the registration of main-scope dependencies inside of GetIt
@@ -48,6 +54,7 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i610.HiveOperation<_i598.AppPermissionStatus>>(
         () => registerModule.appPermissionStatusHiveOperation);
     gh.factory<_i197.GeolocatorService>(() => _i877.GeolocatorServiceImpl());
+    gh.factory<_i857.RoutesService>(() => _i211.RoutesServiceImpl());
     gh.factory<_i916.RiderMapBloc>(
         () => _i916.RiderMapBloc(gh<_i197.GeolocatorService>()));
     gh.lazySingleton<_i950.PrimitiveDatabase<dynamic>>(
@@ -66,6 +73,10 @@ extension GetItInjectableX on _i174.GetIt {
           gh<_i744.HiveInterface>(),
           gh<_i950.PrimitiveDatabase<dynamic>>(),
           hiveEncryption: hiveEncryption,
+        ));
+    gh.factory<_i51.RouteNavigationBloc>(() => _i51.RouteNavigationBloc(
+          gh<_i197.GeolocatorService>(),
+          gh<_i857.RoutesService>(),
         ));
     gh.lazySingleton<_i324.HiveEncryption>(() => _i324.HiveEncryption(
           gh<_i744.HiveInterface>(),

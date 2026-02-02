@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:rider_map_poc/core/router/routes.dart';
 import 'package:rider_map_poc/modules/home/pages/home_page.dart';
 import 'package:rider_map_poc/modules/rider_map/pages/rider_map_page.dart';
+import 'package:rider_map_poc/modules/route_navigation/pages/route_navigation_page.dart';
 import 'package:rider_map_poc/modules/splash/pages/splash_page.dart';
 
 final GlobalKey<NavigatorState> rootNavigatorKey =
@@ -47,6 +48,14 @@ final class AppRouter {
           context: context,
           state: state,
           child: const RiderMapPage(),
+        ),
+      ),
+      GoRoute(
+        path: Routes.routeNavigation,
+        pageBuilder: (context, state) => _slideTransitionPage(
+          context: context,
+          state: state,
+          child: const RouteNavigationPage(),
         ),
       ),
     ],
