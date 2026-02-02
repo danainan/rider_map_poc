@@ -26,6 +26,13 @@ enum LocationStatus {
   serviceDisabled,
 }
 
+/// Location service check status
+enum LocationServiceStatus {
+  checking,
+  enabled,
+  disabled,
+}
+
 /// State for RiderMapBloc - contains only DATA, no UI objects
 class RiderMapState extends Equatable {
   // Position data
@@ -42,6 +49,7 @@ class RiderMapState extends Equatable {
   final bool isTrackingLocation;
   final LocationStatus locationStatus;
   final String? locationErrorMessage;
+  final LocationServiceStatus locationServiceStatus;
   
   // Display info
   final String estimatedTime;
@@ -60,6 +68,7 @@ class RiderMapState extends Equatable {
     this.isTrackingLocation = false,
     this.locationStatus = LocationStatus.initial,
     this.locationErrorMessage,
+    this.locationServiceStatus = LocationServiceStatus.checking,
     this.estimatedTime = '8 mins',
     this.estimatedDistance = '1.2 km',
     this.cameraAction = CameraAction.none,
@@ -75,6 +84,7 @@ class RiderMapState extends Equatable {
     bool? isTrackingLocation,
     LocationStatus? locationStatus,
     String? locationErrorMessage,
+    LocationServiceStatus? locationServiceStatus,
     String? estimatedTime,
     String? estimatedDistance,
     CameraAction? cameraAction,
@@ -89,6 +99,7 @@ class RiderMapState extends Equatable {
       isTrackingLocation: isTrackingLocation ?? this.isTrackingLocation,
       locationStatus: locationStatus ?? this.locationStatus,
       locationErrorMessage: locationErrorMessage ?? this.locationErrorMessage,
+      locationServiceStatus: locationServiceStatus ?? this.locationServiceStatus,
       estimatedTime: estimatedTime ?? this.estimatedTime,
       estimatedDistance: estimatedDistance ?? this.estimatedDistance,
       cameraAction: cameraAction ?? CameraAction.none,
@@ -102,6 +113,14 @@ class RiderMapState extends Equatable {
         riderStatus,
         isSimulationRunning,
         isFollowingRider,
+        isMapReady,
+        isTrackingLocation,
+        locationStatus,
+        locationErrorMessage,
+        locationServiceStatus,
+        estimatedTime,
+        estimatedDistance,
+        cameraAction,
         isMapReady,
         isTrackingLocation,
         locationStatus,

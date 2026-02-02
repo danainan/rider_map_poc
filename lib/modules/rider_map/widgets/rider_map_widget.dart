@@ -142,7 +142,7 @@ class _RiderMapWidgetState extends State<RiderMapWidget> {
         position: widget.riderPosition,
         icon: MapMarkerIcons.riderIcon,
         anchor: const Offset(0.5, 0.5),
-        zIndex: 3,
+        zIndexInt: 3,
         infoWindow: const InfoWindow(title: 'Rider'),
       ),
       Marker(
@@ -153,7 +153,7 @@ class _RiderMapWidgetState extends State<RiderMapWidget> {
           title: 'Pickup Point',
           snippet: 'Siam Paragon',
         ),
-        zIndex: 2,
+        zIndexInt: 2,
       ),
       Marker(
         markerId: const MarkerId('delivery'),
@@ -163,7 +163,7 @@ class _RiderMapWidgetState extends State<RiderMapWidget> {
           title: 'Delivery Point',
           snippet: 'Central World',
         ),
-        zIndex: 2,
+        zIndexInt: 2,
       ),
     };
   }

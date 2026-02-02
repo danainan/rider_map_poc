@@ -13,6 +13,11 @@ class InitializeMap extends RiderMapEvent {
   const InitializeMap();
 }
 
+/// Check if location service is enabled
+class CheckLocationService extends RiderMapEvent {
+  const CheckLocationService();
+}
+
 /// Request location permission and get initial position
 class RequestLocationPermission extends RiderMapEvent {
   const RequestLocationPermission();

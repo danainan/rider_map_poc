@@ -7,6 +7,11 @@ class GeolocatorServiceImpl implements GeolocatorService {
   GeolocatorServiceImpl();
 
   @override
+  Future<bool> isLocationServiceEnabled() async {
+    return await Geolocator.isLocationServiceEnabled();
+  }
+
+  @override
   Future<Position> determinePosition() async {
     bool serviceEnabled;
     LocationPermission permission;

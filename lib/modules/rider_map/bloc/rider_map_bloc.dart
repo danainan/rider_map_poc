@@ -21,6 +21,7 @@ class RiderMapBloc extends Bloc<RiderMapEvent, RiderMapState> {
 
   RiderMapBloc(this._geolocatorService) : super(const RiderMapState()) {
     on<InitializeMap>(_onInitializeMap);
+    on<CheckLocationService>(_onCheckLocationService);
     on<RequestLocationPermission>(_onRequestLocationPermission);
     on<StartLocationTracking>(_onStartLocationTracking);
     on<StopLocationTracking>(_onStopLocationTracking);
@@ -53,6 +54,19 @@ class RiderMapBloc extends Bloc<RiderMapEvent, RiderMapState> {
       riderPosition: MockRouteData.riderStartPosition,
       estimatedTime: MockRouteData.getEstimatedTime(),
       estimatedDistance: MockRouteData.getEstimatedDistance(),
+    ));
+  }
+
+  /// Check if location service is enabled
+  Future<void> _onCheckLocationService(
+    CheckLocationService event,
+    Emitter<RiderMapState> emit,
+  ) async {
+    final isEnabled = await _geolocatorService.isLocationServiceEnabled();
+    emit(state.copyWith(
+      locationServiceStatus: isEnabled 
+          ? LocationServiceStatus.enabled 
+          : LocationServiceStatus.disabled,
     ));
   }
 
