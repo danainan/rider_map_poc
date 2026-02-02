@@ -4,7 +4,6 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:rider_map_poc/core/di/injectable.dart';
 import 'package:rider_map_poc/modules/route_navigation/bloc/route_navigation_bloc.dart';
-import 'package:rider_map_poc/modules/route_navigation/data/mock_location_data.dart';
 import 'package:rider_map_poc/modules/route_navigation/widgets/route_info_card.dart';
 import 'package:rider_map_poc/modules/route_navigation/widgets/route_map_widget.dart';
 

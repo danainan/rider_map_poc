@@ -2,7 +2,6 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:rider_map_poc/modules/route_navigation/bloc/route_navigation_bloc.dart';
 import 'package:rider_map_poc/modules/route_navigation/data/mock_location_data.dart';
 
 /// Custom marker icons for route navigation
@@ -136,7 +135,7 @@ class RouteMapWidget extends StatelessWidget {
         position: restaurantLocation,
         icon: RouteMarkerIcons.restaurantIcon!,
         anchor: const Offset(0.5, 0.5),
-        infoWindow: InfoWindow(
+        infoWindow: const InfoWindow(
           title: MockLocationData.restaurantName,
           snippet: MockLocationData.restaurantAddress,
         ),
