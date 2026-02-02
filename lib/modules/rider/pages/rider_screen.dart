@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:geolocator/geolocator.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:rider_map_poc/core/di/injectable.dart';
+import 'package:rider_map_poc/data/models/permission/permission_request_status.dart';
 import 'package:rider_map_poc/modules/rider/cubit/rider_cubit.dart';
 import 'package:rider_map_poc/modules/rider/widgets/location_permission_view.dart';
 import 'package:rider_map_poc/modules/rider/widgets/location_service_dialog.dart';
@@ -61,11 +62,11 @@ class _RiderScreenState extends State<RiderScreen> with WidgetsBindingObserver {
             }
           },
           builder: (context, state) {
-            if (state.locationPermissionStatus != LocationPermissionStatus.granted) {
+            if (state.permissionStatus != PermissionRequestStatus.granted) {
               return LocationPermissionView(
-                status: state.locationPermissionStatus,
+                status: state.permissionStatus,
                 onRequestPermission: () => _cubit.requestLocationPermission(),
-                onOpenSettings: () => Geolocator.openAppSettings(),
+                onOpenSettings: () => openAppSettings(),
               );
             }
 

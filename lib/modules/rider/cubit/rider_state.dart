@@ -1,15 +1,5 @@
 part of 'rider_cubit.dart';
 
-/// สถานะของ Location Permission
-enum LocationPermissionStatus {
-  initial,
-  checking,
-  granted,
-  denied,
-  deniedForever,
-}
-
-/// สถานะของ Location Service (GPS)
 enum LocationServiceStatus {
   initial,
   checking,
@@ -17,7 +7,6 @@ enum LocationServiceStatus {
   disabled,
 }
 
-/// สถานะการโหลดเส้นทาง
 enum RouteLoadingStatus {
   initial,
   loading,
@@ -25,7 +14,6 @@ enum RouteLoadingStatus {
   error,
 }
 
-/// สถานะของ Rider
 enum RiderDeliveryStatus {
   idle,
   headingToShop,
@@ -34,7 +22,6 @@ enum RiderDeliveryStatus {
   delivered,
 }
 
-/// Camera action สำหรับควบคุม GoogleMap
 enum RiderCameraAction {
   none,
   centerOnRider,
@@ -42,17 +29,13 @@ enum RiderCameraAction {
   followRider,
 }
 
-/// State หลักของ RiderCubit
 final class RiderState extends Equatable {
   const RiderState({
-    // Permission & Service Status
-    this.locationPermissionStatus = LocationPermissionStatus.initial,
+    this.permissionStatus = PermissionRequestStatus.initial,
     this.locationServiceStatus = LocationServiceStatus.initial,
     this.showLocationServiceDialog = false,
-    // Rider Position
     this.riderPosition,
     this.isTrackingLocation = false,
-    // Route
     this.routeLoadingStatus = RouteLoadingStatus.initial,
     this.riderToShopPoints = const [],
     this.shopToCustomerPoints = const [],
@@ -63,27 +46,18 @@ final class RiderState extends Equatable {
     this.totalDistance = '',
     this.totalDuration = '',
     this.routeErrorMessage,
-    // Delivery Status
     this.deliveryStatus = RiderDeliveryStatus.idle,
-    // Camera
     this.cameraAction = RiderCameraAction.none,
     this.isFollowingRider = true,
-    // Map
     this.isMapReady = false,
-    // Error
     this.errorMessage,
   });
 
-  // Permission & Service Status
-  final LocationPermissionStatus locationPermissionStatus;
+  final PermissionRequestStatus permissionStatus;
   final LocationServiceStatus locationServiceStatus;
   final bool showLocationServiceDialog;
-
-  // Rider Position
   final LatLng? riderPosition;
   final bool isTrackingLocation;
-
-  // Route Data
   final RouteLoadingStatus routeLoadingStatus;
   final List<LatLng> riderToShopPoints;
   final List<LatLng> shopToCustomerPoints;
@@ -94,33 +68,22 @@ final class RiderState extends Equatable {
   final String totalDistance;
   final String totalDuration;
   final String? routeErrorMessage;
-
-  // Delivery Status
   final RiderDeliveryStatus deliveryStatus;
-
-  // Camera Control
   final RiderCameraAction cameraAction;
   final bool isFollowingRider;
-
-  // Map
   final bool isMapReady;
-
-  // Error
   final String? errorMessage;
 
-  /// รวม polyline points ทั้งหมด
   List<LatLng> get allRoutePoints => [...riderToShopPoints, ...shopToCustomerPoints];
 
-  /// เช็คว่าพร้อมแสดงแผนที่หรือยัง
   bool get isReadyToShowMap =>
-      locationPermissionStatus == LocationPermissionStatus.granted &&
+      permissionStatus == PermissionRequestStatus.granted &&
       locationServiceStatus == LocationServiceStatus.enabled;
 
-  /// เช็คว่ามีเส้นทางหรือยัง
   bool get hasRoute => riderToShopPoints.isNotEmpty || shopToCustomerPoints.isNotEmpty;
 
   RiderState copyWith({
-    LocationPermissionStatus? locationPermissionStatus,
+    PermissionRequestStatus? permissionStatus,
     LocationServiceStatus? locationServiceStatus,
     bool? showLocationServiceDialog,
     LatLng? riderPosition,
@@ -142,7 +105,7 @@ final class RiderState extends Equatable {
     String? errorMessage,
   }) {
     return RiderState(
-      locationPermissionStatus: locationPermissionStatus ?? this.locationPermissionStatus,
+      permissionStatus: permissionStatus ?? this.permissionStatus,
       locationServiceStatus: locationServiceStatus ?? this.locationServiceStatus,
       showLocationServiceDialog: showLocationServiceDialog ?? this.showLocationServiceDialog,
       riderPosition: riderPosition ?? this.riderPosition,
@@ -167,7 +130,7 @@ final class RiderState extends Equatable {
 
   @override
   List<Object?> get props => [
-        locationPermissionStatus,
+        permissionStatus,
         locationServiceStatus,
         showLocationServiceDialog,
         riderPosition,

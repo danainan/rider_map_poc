@@ -3,8 +3,6 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-/// Builder สำหรับสร้าง Custom Marker Icons แบบ Canvas-based
-/// เหมือนกับ RouteMarkerIcons ใน route_navigation
 class RiderMarkerBuilder {
   RiderMarkerBuilder._();
 
@@ -16,7 +14,6 @@ class RiderMarkerBuilder {
   static BitmapDescriptor? get shopIcon => _shopIcon;
   static BitmapDescriptor? get customerIcon => _customerIcon;
 
-  /// Initialize all marker icons - เรียกใช้ก่อนแสดง map
   static Future<void> initialize() async {
     _riderIcon = await _createCustomMarkerBitmap(
       icon: Icons.delivery_dining,

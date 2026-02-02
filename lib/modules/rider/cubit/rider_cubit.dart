@@ -5,9 +5,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:injectable/injectable.dart';
+import 'package:rider_map_poc/data/models/permission/permission_request_status.dart';
 import 'package:rider_map_poc/data/services/geolocator/geolocator_service.dart';
-import 'package:rider_map_poc/modules/rider/data/rider_mock_data.dart';
+import 'package:rider_map_poc/data/services/permission_status/app_permission_status_service.dart';
 import 'package:rider_map_poc/data/services/rider/rider_repository.dart';
+import 'package:rider_map_poc/modules/rider/data/rider_mock_data.dart';
 
 part 'rider_state.dart';
 
@@ -15,16 +17,18 @@ part 'rider_state.dart';
 class RiderCubit extends Cubit<RiderState> {
   final GeolocatorService _geolocatorService;
   final RiderRepository _riderRepository;
+  final AppPermissionStatusService _permissionService;
 
   StreamSubscription<Position>? _positionStreamSubscription;
 
   RiderCubit(
     this._geolocatorService,
     this._riderRepository,
+    this._permissionService,
   ) : super(const RiderState());
 
   Future<void> initialize() async {
-    await checkLocationPermission();
+    await requestLocationPermission();
   }
 
   @override
@@ -33,63 +37,14 @@ class RiderCubit extends Cubit<RiderState> {
     return super.close();
   }
 
-  Future<void> checkLocationPermission() async {
-    emit(state.copyWith(locationPermissionStatus: LocationPermissionStatus.checking));
-
-    try {
-      final permission = await Geolocator.checkPermission();
-      
-      switch (permission) {
-        case LocationPermission.always:
-        case LocationPermission.whileInUse:
-          emit(state.copyWith(locationPermissionStatus: LocationPermissionStatus.granted));
-          await checkLocationService();
-          break;
-        case LocationPermission.denied:
-          await requestLocationPermission();
-          break;
-        case LocationPermission.deniedForever:
-          emit(state.copyWith(locationPermissionStatus: LocationPermissionStatus.deniedForever));
-          break;
-        case LocationPermission.unableToDetermine:
-          emit(state.copyWith(locationPermissionStatus: LocationPermissionStatus.denied));
-          break;
-      }
-    } catch (e) {
-      emit(state.copyWith(
-        locationPermissionStatus: LocationPermissionStatus.denied,
-        errorMessage: e.toString(),
-      ));
-    }
-  }
-
   Future<void> requestLocationPermission() async {
-    emit(state.copyWith(locationPermissionStatus: LocationPermissionStatus.checking));
+    emit(state.copyWith(permissionStatus: PermissionRequestStatus.requesting));
 
-    try {
-      final permission = await Geolocator.requestPermission();
+    final status = await _permissionService.requestLocationPermission();
+    emit(state.copyWith(permissionStatus: status));
 
-      switch (permission) {
-        case LocationPermission.always:
-        case LocationPermission.whileInUse:
-          emit(state.copyWith(locationPermissionStatus: LocationPermissionStatus.granted));
-          await checkLocationService();
-          break;
-        case LocationPermission.denied:
-          emit(state.copyWith(locationPermissionStatus: LocationPermissionStatus.denied));
-          break;
-        case LocationPermission.deniedForever:
-          emit(state.copyWith(locationPermissionStatus: LocationPermissionStatus.deniedForever));
-          break;
-        case LocationPermission.unableToDetermine:
-          emit(state.copyWith(locationPermissionStatus: LocationPermissionStatus.denied));
-          break;
-      }
-    } catch (e) {
-      emit(state.copyWith(
-        locationPermissionStatus: LocationPermissionStatus.denied,
-        errorMessage: e.toString(),
-      ));
+    if (status == PermissionRequestStatus.granted) {
+      await checkLocationService();
     }
   }
 
@@ -113,7 +68,7 @@ class RiderCubit extends Cubit<RiderState> {
   }
 
   Future<void> onAppResumed() async {
-    if (state.locationPermissionStatus == LocationPermissionStatus.granted) {
+    if (state.permissionStatus == PermissionRequestStatus.granted) {
       await checkLocationService();
     }
   }
@@ -164,14 +119,12 @@ class RiderCubit extends Cubit<RiderState> {
     );
   }
 
-  /// หยุด tracking ตำแหน่ง
   void stopLocationTracking() {
     _positionStreamSubscription?.cancel();
     _positionStreamSubscription = null;
     emit(state.copyWith(isTrackingLocation: false));
   }
 
-  /// อัพเดทตำแหน่ง Rider
   void _updateRiderPosition(double latitude, double longitude) {
     final newPosition = LatLng(latitude, longitude);
     emit(state.copyWith(

@@ -85,13 +85,14 @@ extension GetItInjectableX on _i174.GetIt {
           gh<_i197.GeolocatorService>(),
           gh<_i857.RoutesService>(),
         ));
-    gh.factory<_i635.RiderCubit>(() => _i635.RiderCubit(
-          gh<_i197.GeolocatorService>(),
-          gh<_i338.RiderRepository>(),
-        ));
     gh.lazySingleton<_i324.HiveEncryption>(() => _i324.HiveEncryption(
           gh<_i744.HiveInterface>(),
           gh<_i950.PrimitiveDatabase<dynamic>>(),
+        ));
+    gh.factory<_i635.RiderCubit>(() => _i635.RiderCubit(
+          gh<_i197.GeolocatorService>(),
+          gh<_i338.RiderRepository>(),
+          gh<_i537.AppPermissionStatusService>(),
         ));
     return this;
   }

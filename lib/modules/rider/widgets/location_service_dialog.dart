@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 
-/// Dialog แจ้งเตือนให้เปิด Location Service (GPS)
 class LocationServiceDialog extends StatelessWidget {
   const LocationServiceDialog({super.key});
 
@@ -15,7 +14,6 @@ class LocationServiceDialog extends StatelessWidget {
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Icon
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
@@ -30,7 +28,6 @@ class LocationServiceDialog extends StatelessWidget {
           ),
           const SizedBox(height: 20),
 
-          // Title
           const Text(
             'เปิดบริการตำแหน่ง',
             style: TextStyle(
@@ -40,7 +37,6 @@ class LocationServiceDialog extends StatelessWidget {
           ),
           const SizedBox(height: 12),
 
-          // Description
           Text(
             'กรุณาเปิด GPS เพื่อให้แอปสามารถ\nแสดงตำแหน่งของคุณบนแผนที่',
             textAlign: TextAlign.center,
@@ -50,8 +46,6 @@ class LocationServiceDialog extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 24),
-
-          // Buttons
           Row(
             children: [
               Expanded(
@@ -70,7 +64,6 @@ class LocationServiceDialog extends StatelessWidget {
               Expanded(
                 child: ElevatedButton(
                   onPressed: () {
-                    // เปิดหน้าตั้งค่า Location
                     Geolocator.openLocationSettings();
                   },
                   style: ElevatedButton.styleFrom(

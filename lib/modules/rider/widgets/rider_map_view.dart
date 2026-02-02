@@ -8,7 +8,6 @@ import 'package:rider_map_poc/modules/rider/cubit/rider_cubit.dart';
 import 'package:rider_map_poc/modules/rider/data/rider_mock_data.dart';
 import 'package:rider_map_poc/modules/rider/widgets/rider_marker_builder.dart';
 
-/// Widget แสดง Google Map พร้อม Rider, Shop, Customer markers
 class RiderMapView extends StatefulWidget {
   const RiderMapView({super.key});
 
@@ -19,7 +18,6 @@ class RiderMapView extends StatefulWidget {
 class _RiderMapViewState extends State<RiderMapView> {
   GoogleMapController? _mapController;
   final Completer<GoogleMapController> _controllerCompleter = Completer();
-  bool _markersInitialized = false;
 
   @override
   void initState() {
@@ -30,7 +28,6 @@ class _RiderMapViewState extends State<RiderMapView> {
   Future<void> _initializeMarkers() async {
     await RiderMarkerBuilder.initialize();
     if (mounted) {
-      setState(() => _markersInitialized = true);
     }
   }
 

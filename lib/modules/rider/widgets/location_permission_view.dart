@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:rider_map_poc/modules/rider/cubit/rider_cubit.dart';
+import 'package:rider_map_poc/data/models/permission/permission_request_status.dart';
 
-/// Widget สำหรับแสดง UI ขอ Location Permission
 class LocationPermissionView extends StatelessWidget {
   const LocationPermissionView({
     super.key,
@@ -10,7 +9,7 @@ class LocationPermissionView extends StatelessWidget {
     required this.onOpenSettings,
   });
 
-  final LocationPermissionStatus status;
+  final PermissionRequestStatus status;
   final VoidCallback onRequestPermission;
   final VoidCallback onOpenSettings;
 
@@ -22,11 +21,10 @@ class LocationPermissionView extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Icon
+
             _buildIcon(),
             const SizedBox(height: 24),
 
-            // Title
             Text(
               _getTitle(),
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
@@ -36,7 +34,6 @@ class LocationPermissionView extends StatelessWidget {
             ),
             const SizedBox(height: 12),
 
-            // Description
             Text(
               _getDescription(),
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
@@ -46,7 +43,6 @@ class LocationPermissionView extends StatelessWidget {
             ),
             const SizedBox(height: 32),
 
-            // Button
             _buildButton(context),
           ],
         ),
@@ -59,18 +55,18 @@ class LocationPermissionView extends StatelessWidget {
     final Color iconColor;
 
     switch (status) {
-      case LocationPermissionStatus.initial:
-      case LocationPermissionStatus.checking:
+      case PermissionRequestStatus.initial:
+      case PermissionRequestStatus.requesting:
         return const CircularProgressIndicator();
-      case LocationPermissionStatus.denied:
+      case PermissionRequestStatus.denied:
         iconData = Icons.location_off_outlined;
         iconColor = Colors.orange;
         break;
-      case LocationPermissionStatus.deniedForever:
+      case PermissionRequestStatus.hasDeniedBefore:
         iconData = Icons.location_disabled;
         iconColor = Colors.red;
         break;
-      case LocationPermissionStatus.granted:
+      case PermissionRequestStatus.granted:
         iconData = Icons.location_on;
         iconColor = Colors.green;
         break;
@@ -92,39 +88,39 @@ class LocationPermissionView extends StatelessWidget {
 
   String _getTitle() {
     switch (status) {
-      case LocationPermissionStatus.initial:
-      case LocationPermissionStatus.checking:
+      case PermissionRequestStatus.initial:
+      case PermissionRequestStatus.requesting:
         return 'กำลังตรวจสอบสิทธิ์...';
-      case LocationPermissionStatus.denied:
+      case PermissionRequestStatus.denied:
         return 'ต้องการสิทธิ์เข้าถึงตำแหน่ง';
-      case LocationPermissionStatus.deniedForever:
+      case PermissionRequestStatus.hasDeniedBefore:
         return 'สิทธิ์ถูกปฏิเสธถาวร';
-      case LocationPermissionStatus.granted:
+      case PermissionRequestStatus.granted:
         return 'สิทธิ์ได้รับอนุญาต';
     }
   }
 
   String _getDescription() {
     switch (status) {
-      case LocationPermissionStatus.initial:
-      case LocationPermissionStatus.checking:
+      case PermissionRequestStatus.initial:
+      case PermissionRequestStatus.requesting:
         return 'กรุณารอสักครู่...';
-      case LocationPermissionStatus.denied:
+      case PermissionRequestStatus.denied:
         return 'แอปต้องการสิทธิ์เข้าถึงตำแหน่งของคุณ\nเพื่อแสดงตำแหน่งบนแผนที่และนำทาง';
-      case LocationPermissionStatus.deniedForever:
+      case PermissionRequestStatus.hasDeniedBefore:
         return 'คุณได้ปฏิเสธสิทธิ์อย่างถาวร\nกรุณาไปที่ตั้งค่าเพื่อเปิดใช้งานสิทธิ์';
-      case LocationPermissionStatus.granted:
+      case PermissionRequestStatus.granted:
         return 'พร้อมใช้งาน';
     }
   }
 
   Widget _buildButton(BuildContext context) {
     switch (status) {
-      case LocationPermissionStatus.initial:
-      case LocationPermissionStatus.checking:
+      case PermissionRequestStatus.initial:
+      case PermissionRequestStatus.requesting:
         return const SizedBox.shrink();
 
-      case LocationPermissionStatus.denied:
+      case PermissionRequestStatus.denied:
         return SizedBox(
           width: double.infinity,
           child: ElevatedButton.icon(
@@ -139,7 +135,7 @@ class LocationPermissionView extends StatelessWidget {
           ),
         );
 
-      case LocationPermissionStatus.deniedForever:
+      case PermissionRequestStatus.hasDeniedBefore:
         return SizedBox(
           width: double.infinity,
           child: ElevatedButton.icon(
@@ -154,7 +150,7 @@ class LocationPermissionView extends StatelessWidget {
           ),
         );
 
-      case LocationPermissionStatus.granted:
+      case PermissionRequestStatus.granted:
         return const Icon(Icons.check_circle, color: Colors.green, size: 48);
     }
   }

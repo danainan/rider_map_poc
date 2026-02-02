@@ -194,7 +194,6 @@ class RiderBottomSheet extends StatelessWidget {
   }
 }
 
-/// Status Badge widget
 class StatusBadge extends StatelessWidget {
   const StatusBadge({super.key, required this.status});
 
@@ -236,7 +235,6 @@ class StatusBadge extends StatelessWidget {
   }
 }
 
-/// Route Info Card widget
 class _RouteInfoCard extends StatelessWidget {
   const _RouteInfoCard({
     required this.icon,
