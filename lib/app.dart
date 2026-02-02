@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rider_map_poc/core/di/injectable.dart';
 import 'package:rider_map_poc/core/router/app_router.dart';
 import 'package:rider_map_poc/core/theme/app_theme.dart';
+import 'package:rider_map_poc/modules/rider/cubit/rider_cubit.dart';
 
 class RiderMapApp extends StatelessWidget {
   const RiderMapApp({super.key});
@@ -21,7 +24,9 @@ class RiderMapApp extends StatelessWidget {
           AppTheme.light,
         ],
       ),
-
+      builder: (context, child) {
+        return child!;
+      },
     );
   }
 }

@@ -4,6 +4,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:rider_map_poc/core/di/injectable.dart';
 import 'package:rider_map_poc/modules/route_navigation/bloc/route_navigation_bloc.dart';
+import 'package:rider_map_poc/modules/route_navigation/widgets/google_map.dart';
 import 'package:rider_map_poc/modules/route_navigation/widgets/route_info_card.dart';
 import 'package:rider_map_poc/modules/route_navigation/widgets/route_map_widget.dart';
 
@@ -281,18 +282,15 @@ class _RouteNavigationPageState extends State<RouteNavigationPage>
           builder: (context, state) {
             return Stack(
               children: [
-                // Map Widget
-                RouteMapWidget(
-                  riderPosition: state.riderPosition,
-                  restaurantLocation: state.restaurantLocation,
-                  customerLocation: state.customerLocation,
-                  riderToRestaurantRoute: state.riderToRestaurantRoute,
-                  restaurantToCustomerRoute: state.restaurantToCustomerRoute,
+                RiderGoogleMap(
+                  riderPosition: state.riderPosition, 
+                  restaurantLocation: state.restaurantLocation, 
+                  customerLocation: state.customerLocation, 
+                  riderToRestaurantRoute: state.riderToRestaurantRoute, restaurantToCustomerRoute: state.restaurantToCustomerRoute, 
                   onMapCreated: (controller) {
-                    _mapController = controller;
-                    _bloc.add(const MapControllerReadyEvent());
-                  },
-                ),
+                  _mapController = controller;
+                  _bloc.add(const MapControllerReadyEvent());
+                }),
 
                 // Route Info Card (Bottom)
                 Positioned(

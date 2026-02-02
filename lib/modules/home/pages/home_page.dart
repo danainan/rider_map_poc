@@ -33,6 +33,13 @@ class HomePage extends StatelessWidget {
               subtitle: 'Navigate with Routes API (Rider → Restaurant → Customer)',
               onTap: () => context.push(Routes.routeNavigation),
             ),
+            const SizedBox(height: 16),
+            _MenuCard(
+              icon: Icons.route,
+              title: 'Rider Screen 2',
+              subtitle: 'View rider screen',
+              onTap: () => context.push(Routes.rider),
+            ),
             const Spacer(),         
           ],
         ),

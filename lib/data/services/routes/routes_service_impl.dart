@@ -41,7 +41,7 @@ class RoutesServiceImpl implements RoutesService {
           }
         }
       },
-      'travelMode': 'DRIVE',
+      'travelMode': 'TWO_WHEELER',
       'routingPreference': 'TRAFFIC_AWARE',
       'computeAlternativeRoutes': false,
       'languageCode': 'th',

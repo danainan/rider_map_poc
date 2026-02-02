@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import 'package:rider_map_poc/core/router/routes.dart';
 import 'package:rider_map_poc/modules/home/pages/home_page.dart';
+import 'package:rider_map_poc/modules/rider/pages/rider_screen.dart';
 import 'package:rider_map_poc/modules/rider_map/pages/rider_map_page.dart';
 import 'package:rider_map_poc/modules/route_navigation/pages/route_navigation_page.dart';
 import 'package:rider_map_poc/modules/splash/pages/splash_page.dart';
@@ -56,6 +57,14 @@ final class AppRouter {
           context: context,
           state: state,
           child: const RouteNavigationPage(),
+        ),
+      ),
+      GoRoute(
+        path: Routes.rider,
+        pageBuilder: (context, state) => _slideTransitionPage(
+          context: context,
+          state: state,
+          child: const RiderScreen(),
         ),
       ),
     ],
