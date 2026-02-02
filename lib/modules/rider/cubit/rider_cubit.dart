@@ -38,7 +38,9 @@ class RiderCubit extends Cubit<RiderState> {
   }
 
   Future<void> requestLocationPermission() async {
-    emit(state.copyWith(permissionStatus: PermissionRequestStatus.requesting));
+    emit(state.copyWith(permissionStatus: PermissionRequestStatus.requesting,
+    routeLoadingStatus: RouteLoadingStatus.loading
+    ));
 
     final status = await _permissionService.requestLocationPermission();
     emit(state.copyWith(permissionStatus: status));
@@ -48,39 +50,24 @@ class RiderCubit extends Cubit<RiderState> {
     }
   }
 
-  Future<void> checkLocationService({bool isResuming = false}) async {
-    // ถ้าเป็นการ resume และ location service เปิดอยู่แล้ว ไม่ต้องทำอะไร
-    if (isResuming && state.locationServiceStatus == LocationServiceStatus.enabled) {
-      final isEnabled = await _geolocatorService.isLocationServiceEnabled();
-      if (isEnabled) return; // ยังเปิดอยู่ ไม่ต้องทำอะไร
-    }
-
-    // ไม่ emit checking ถ้าเป็นการ resume เพื่อไม่ให้ UI กระพริบ
-    if (!isResuming) {
-      emit(state.copyWith(locationServiceStatus: LocationServiceStatus.checking));
-    }
-
+  Future<void> checkLocationService() async {
     final isEnabled = await _geolocatorService.isLocationServiceEnabled();
 
-    if (isEnabled) {
-      emit(state.copyWith(
-        locationServiceStatus: LocationServiceStatus.enabled,
-        showLocationServiceDialog: false,
-      ));
-      if(state.riderPosition == null) {
-        await onLocationReady();
-      }
-    } else {
-      emit(state.copyWith(
-        locationServiceStatus: LocationServiceStatus.disabled,
-        showLocationServiceDialog: true,
-      ));
+    emit(state.copyWith(
+      locationServiceStatus: isEnabled
+          ? LocationServiceStatus.enabled
+          : LocationServiceStatus.disabled,
+      showLocationServiceDialog: !isEnabled,
+    ));
+
+    if (isEnabled && state.riderPosition == null) {
+      await onLocationReady();
     }
   }
 
   Future<void> onAppResumed() async {
     if (state.permissionStatus == PermissionRequestStatus.granted) {
-      await checkLocationService(isResuming: true);
+      await checkLocationService();
     }
   }
 
