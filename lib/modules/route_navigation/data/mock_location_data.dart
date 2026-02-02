@@ -17,22 +17,4 @@ class MockLocationData {
   /// Default camera position (Bangkok)
   static const LatLng defaultCameraPosition = LatLng(13.7466, 100.5370);
   static const double defaultZoom = 15.0;
-
-  /// Get estimated time to restaurant (mock)
-  static String getEstimatedTimeToRestaurant() => '5 นาที';
-
-  /// Get estimated distance to restaurant (mock)
-  static String getEstimatedDistanceToRestaurant() => '800 ม.';
-
-  /// Get estimated time to customer (mock)
-  static String getEstimatedTimeToCustomer() => '3 นาที';
-
-  /// Get estimated distance to customer (mock)
-  static String getEstimatedDistanceToCustomer() => '500 ม.';
-
-  /// Get total estimated time (mock)
-  static String getTotalEstimatedTime() => '8 นาที';
-
-  /// Get total estimated distance (mock)
-  static String getTotalEstimatedDistance() => '1.3 กม.';
 }
