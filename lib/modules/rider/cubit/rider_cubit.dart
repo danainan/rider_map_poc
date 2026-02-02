@@ -8,7 +8,7 @@ import 'package:injectable/injectable.dart';
 import 'package:rider_map_poc/data/models/permission/permission_request_status.dart';
 import 'package:rider_map_poc/data/services/geolocator/geolocator_service.dart';
 import 'package:rider_map_poc/data/services/permission_status/app_permission_status_service.dart';
-import 'package:rider_map_poc/data/services/rider/rider_repository.dart';
+import 'package:rider_map_poc/data/services/rider/rider_route_service.dart';
 import 'package:rider_map_poc/modules/rider/data/rider_mock_data.dart';
 
 part 'rider_state.dart';
@@ -16,14 +16,14 @@ part 'rider_state.dart';
 @injectable
 class RiderCubit extends Cubit<RiderState> {
   final GeolocatorService _geolocatorService;
-  final RiderRepository _riderRepository;
+  final RiderRouteService _riderRouteService;
   final AppPermissionStatusService _permissionService;
 
   StreamSubscription<Position>? _positionStreamSubscription;
 
   RiderCubit(
     this._geolocatorService,
-    this._riderRepository,
+    this._riderRouteService,
     this._permissionService,
   ) : super(const RiderState());
 
@@ -48,8 +48,17 @@ class RiderCubit extends Cubit<RiderState> {
     }
   }
 
-  Future<void> checkLocationService() async {
-    emit(state.copyWith(locationServiceStatus: LocationServiceStatus.checking));
+  Future<void> checkLocationService({bool isResuming = false}) async {
+    // ถ้าเป็นการ resume และ location service เปิดอยู่แล้ว ไม่ต้องทำอะไร
+    if (isResuming && state.locationServiceStatus == LocationServiceStatus.enabled) {
+      final isEnabled = await _geolocatorService.isLocationServiceEnabled();
+      if (isEnabled) return; // ยังเปิดอยู่ ไม่ต้องทำอะไร
+    }
+
+    // ไม่ emit checking ถ้าเป็นการ resume เพื่อไม่ให้ UI กระพริบ
+    if (!isResuming) {
+      emit(state.copyWith(locationServiceStatus: LocationServiceStatus.checking));
+    }
 
     final isEnabled = await _geolocatorService.isLocationServiceEnabled();
 
@@ -58,7 +67,9 @@ class RiderCubit extends Cubit<RiderState> {
         locationServiceStatus: LocationServiceStatus.enabled,
         showLocationServiceDialog: false,
       ));
-      await _onLocationReady();
+      if(state.riderPosition == null) {
+        await onLocationReady();
+      }
     } else {
       emit(state.copyWith(
         locationServiceStatus: LocationServiceStatus.disabled,
@@ -69,7 +80,7 @@ class RiderCubit extends Cubit<RiderState> {
 
   Future<void> onAppResumed() async {
     if (state.permissionStatus == PermissionRequestStatus.granted) {
-      await checkLocationService();
+      await checkLocationService(isResuming: true);
     }
   }
 
@@ -81,7 +92,7 @@ class RiderCubit extends Cubit<RiderState> {
     emit(state.copyWith(showLocationServiceDialog: true));
   }
 
-  Future<void> _onLocationReady() async {
+  Future<void> onLocationReady() async {
     await _getCurrentPosition();
 
     startLocationTracking();
@@ -138,7 +149,7 @@ class RiderCubit extends Cubit<RiderState> {
 
     emit(state.copyWith(routeLoadingStatus: RouteLoadingStatus.loading));
 
-    final result = await _riderRepository.getMultiStopRoute(
+    final result = await _riderRouteService.getMultiStopRoute(
       riderLocation: state.riderPosition!,
       shopLocation: RiderMockData.shopLocation,
       customerLocation: RiderMockData.customerLocation,

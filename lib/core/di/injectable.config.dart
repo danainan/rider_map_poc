@@ -28,10 +28,10 @@ import 'package:rider_map_poc/data/services/permission_status/app_permission_sta
     as _i537;
 import 'package:rider_map_poc/data/services/permission_status/app_permission_status_service_impl.dart'
     as _i161;
-import 'package:rider_map_poc/data/services/rider/rider_repository.dart'
-    as _i338;
-import 'package:rider_map_poc/data/services/rider/rider_repository_impl.dart'
-    as _i767;
+import 'package:rider_map_poc/data/services/rider/rider_route_service.dart'
+    as _i460;
+import 'package:rider_map_poc/data/services/rider/rider_route_service_impl.dart'
+    as _i277;
 import 'package:rider_map_poc/data/services/routes/routes_service.dart'
     as _i857;
 import 'package:rider_map_poc/data/services/routes/routes_service_impl.dart'
@@ -60,10 +60,9 @@ extension GetItInjectableX on _i174.GetIt {
         () => registerModule.appPermissionStatusHiveOperation);
     gh.factory<_i197.GeolocatorService>(() => _i877.GeolocatorServiceImpl());
     gh.factory<_i857.RoutesService>(() => _i211.RoutesServiceImpl());
+    gh.factory<_i460.RiderRouteService>(() => _i277.RiderRouteServiceImpl());
     gh.factory<_i916.RiderMapBloc>(
         () => _i916.RiderMapBloc(gh<_i197.GeolocatorService>()));
-    gh.factory<_i338.RiderRepository>(
-        () => _i767.RiderRepositoryImpl(gh<_i857.RoutesService>()));
     gh.lazySingleton<_i950.PrimitiveDatabase<dynamic>>(
         () => registerModule.secureStorageManager);
     gh.factory<_i537.AppPermissionStatusService>(() =>
@@ -91,7 +90,7 @@ extension GetItInjectableX on _i174.GetIt {
         ));
     gh.factory<_i635.RiderCubit>(() => _i635.RiderCubit(
           gh<_i197.GeolocatorService>(),
-          gh<_i338.RiderRepository>(),
+          gh<_i460.RiderRouteService>(),
           gh<_i537.AppPermissionStatusService>(),
         ));
     return this;
