@@ -10,4 +10,5 @@ final class Routes {
   static const String routeNavigation = '/route-navigation';
   static const String settings = '/settings';
   static const String rider = '/rider';
+  static const String distanceMatrix = '/distance-matrix';
 }

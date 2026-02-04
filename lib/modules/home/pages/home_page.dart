@@ -40,6 +40,13 @@ class HomePage extends StatelessWidget {
               subtitle: 'View rider screen',
               onTap: () => context.push(Routes.rider),
             ),
+            const SizedBox(height: 16),
+            _MenuCard(
+              icon: Icons.social_distance,
+              title: 'Distance Matrix Screen',
+              subtitle: 'View distance matrix screen',
+              onTap: () => context.push(Routes.distanceMatrix),
+            ),
             const Spacer(),         
           ],
         ),

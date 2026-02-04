@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:rider_map_poc/core/router/routes.dart';
+import 'package:rider_map_poc/modules/distance_matrix/pages/distance_matrix_screen.dart';
 import 'package:rider_map_poc/modules/home/pages/home_page.dart';
 import 'package:rider_map_poc/modules/rider/pages/rider_screen.dart';
 import 'package:rider_map_poc/modules/rider_map/pages/rider_map_page.dart';
@@ -65,6 +66,14 @@ final class AppRouter {
           context: context,
           state: state,
           child: const RiderScreen(),
+        ),
+      ),
+      GoRoute(
+        path: Routes.distanceMatrix,
+        pageBuilder: (context, state) => _slideTransitionPage(
+          context: context,
+          state: state,
+          child: const DistanceMatrixScreen(),
         ),
       ),
     ],

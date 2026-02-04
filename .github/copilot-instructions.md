@@ -6,7 +6,7 @@ Feature-first Clean Architecture with BLoC pattern. Each module is self-containe
 ```
 lib/modules/rider_map/
 ├── rider_map.dart          # Barrel export (import this, not individual files)
-├── bloc/                   # BLoC: Events → State transformations
+├── cubit/                 # (If using Cubit instead of BLoC)
 ├── data/                   # Data sources (MockRouteData for POC)
 ├── pages/                  # Screen widgets (provide BLoC via BlocProvider)
 └── widgets/                # Stateless UI components

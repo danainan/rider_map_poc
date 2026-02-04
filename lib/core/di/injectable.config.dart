@@ -20,6 +20,10 @@ import 'package:rider_map_poc/data/local/primitive/primitive_database.dart'
     as _i950;
 import 'package:rider_map_poc/data/models/permission/app_permission_status.dart'
     as _i598;
+import 'package:rider_map_poc/data/services/distance_matrix/distance_matrix_service.dart'
+    as _i1013;
+import 'package:rider_map_poc/data/services/distance_matrix/distance_matrix_service_impl.dart'
+    as _i971;
 import 'package:rider_map_poc/data/services/geolocator/geolocator_service.dart'
     as _i197;
 import 'package:rider_map_poc/data/services/geolocator/geolocator_service_impl.dart'
@@ -36,6 +40,8 @@ import 'package:rider_map_poc/data/services/routes/routes_service.dart'
     as _i857;
 import 'package:rider_map_poc/data/services/routes/routes_service_impl.dart'
     as _i211;
+import 'package:rider_map_poc/modules/distance_matrix/cubit/distance_metrix_cubit.dart'
+    as _i748;
 import 'package:rider_map_poc/modules/rider/cubit/rider_cubit.dart' as _i635;
 import 'package:rider_map_poc/modules/rider_map/bloc/rider_map_bloc.dart'
     as _i916;
@@ -68,6 +74,8 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i537.AppPermissionStatusService>(() =>
         _i161.AppPermissionStatusServiceImpl(
             gh<_i610.HiveOperation<_i598.AppPermissionStatus>>()));
+    gh.factory<_i1013.DistanceMatrixService>(
+        () => _i971.DistanceMatrixServiceImpl());
     gh.factory<_i101.HiveManager>(
         () => _i101.HiveManager(gh<_i744.HiveInterface>()));
     gh.factoryParam<_i610.HiveOperation<dynamic>, _i324.HiveEncryption?,
@@ -84,6 +92,8 @@ extension GetItInjectableX on _i174.GetIt {
           gh<_i197.GeolocatorService>(),
           gh<_i857.RoutesService>(),
         ));
+    gh.factory<_i748.DistanceMetrixCubit>(
+        () => _i748.DistanceMetrixCubit(gh<_i1013.DistanceMatrixService>()));
     gh.lazySingleton<_i324.HiveEncryption>(() => _i324.HiveEncryption(
           gh<_i744.HiveInterface>(),
           gh<_i950.PrimitiveDatabase<dynamic>>(),
