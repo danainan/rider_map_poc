@@ -3,7 +3,8 @@ import 'package:equatable/equatable.dart';
 import 'package:injectable/injectable.dart';
 import 'package:rider_map_poc/data/models/distance_matrix/distance_matrix_response.dart';
 import 'package:rider_map_poc/data/services/distance_matrix/distance_matrix_service.dart';
-import 'package:rider_map_poc/modules/distance_matrix/data/models/location_point.dart';
+import 'package:rider_map_poc/data/models/location_point/location_point.dart';
+import 'package:rider_map_poc/data/services/longdo_map/longdo_map_service.dart';
 
 part 'distance_metrix_state.dart';
 
@@ -11,9 +12,11 @@ part 'distance_metrix_state.dart';
 class DistanceMetrixCubit extends Cubit<DistanceMetrixState> {
   DistanceMetrixCubit(
     this._distanceMatrixService,
+    this._longDoMapService,
   ) : super(const DistanceMetrixState());
 
   final DistanceMatrixService _distanceMatrixService;
+  final LongdoMapService _longDoMapService;
 
   /// เพิ่มจุดตำแหน่งใหม่
   void addLocation() {
@@ -71,53 +74,83 @@ class DistanceMetrixCubit extends Cubit<DistanceMetrixState> {
 
     emit(state.copyWith(status: DistanceMetrixStatus.loading));
 
-    try {
-      double totalDist = 0;
-      int totalTime = 0;
 
-      // คำนวณระยะทางแบบ A->B, B->C, C->D
-      for (int i = 0; i < state.locations.length - 1; i++) {
-        final origin = state.locations[i].latLngString;
-        final destination = state.locations[i + 1].latLngString;
+    // double totalDist = 0;
+    // int totalTime = 0;
 
-        final result = await _distanceMatrixService.fetchDistanceMatrix(
-          origins: origin,
-          destinations: destination,
-        );
+    // // คำนวณระยะทางแบบ A->B, B->C, C->D
+    // for (int i = 0; i < state.locations.length - 1; i++) {
+    //   final origin = state.locations[i].latLngString;
+    //   final destination = state.locations[i + 1].latLngString;
 
-        await result.fold(
-          (failure) {
-            throw Exception('Failed to fetch distance matrix');
-          },
-          (data) async {
-            if (data.rows != null && 
-                data.rows!.isNotEmpty && 
-                data.rows!.first.elements != null &&
-                data.rows!.first.elements!.isNotEmpty) {
-              
-              final element = data.rows!.first.elements!.first;
-              
-              if (element.status == 'OK') {
-                totalDist += (element.distance?.value ?? 0).toDouble();
-                totalTime += (element.duration?.value ?? 0);
-              }
-            }
-          },
-        );
-      }
+    //   final result = await _distanceMatrixService.fetchDistanceMatrix(
+    //     origins: origin,
+    //     destinations: destination,
+    //   );
 
-      emit(state.copyWith(
-        status: DistanceMetrixStatus.success,
-        totalDistance: totalDist,
-        totalDuration: totalTime,
-        errorMessage: null,
-      ));
-    } catch (e) {
-      emit(state.copyWith(
-        status: DistanceMetrixStatus.failure,
-        errorMessage: e.toString(),
-      ));
+    //   await result.fold(
+    //     (failure) {
+    //       throw Exception('Failed to fetch distance matrix');
+    //     },
+    //     (data) async {
+    //       if (data.rows != null && 
+    //           data.rows!.isNotEmpty && 
+    //           data.rows!.first.elements != null &&
+    //           data.rows!.first.elements!.isNotEmpty) {
+            
+    //         final element = data.rows!.first.elements!.first;
+            
+    //         if (element.status == 'OK') {
+    //           totalDist += (element.distance?.value ?? 0).toDouble();
+    //           totalTime += (element.duration?.value ?? 0);
+    //         }
+    //       }
+    //     },
+    //   );
+    // }
+
+    // emit(state.copyWith(
+    //   status: DistanceMetrixStatus.success,
+    //   totalDistance: totalDist,
+    //   totalDuration: totalTime,
+    //   errorMessage: null,
+    // ));
+
+
+    List<double> flon = [];
+    List<double> flat = [];
+    List<double> tlon = [];
+    List<double> tlat = [];
+
+    for (int i = 0; i < state.locations.length - 1; i++) {
+      flon.add(state.locations[i].longitude);
+      flat.add(state.locations[i].latitude);
+      tlon.add(state.locations[i + 1].longitude);
+      tlat.add(state.locations[i + 1].latitude);
     }
+
+    // 2. ยิง API ครั้งเดียวพร้อมกันทุกจุด
+    final result = await _longDoMapService.calculateRouteMatrix(
+      flon: flon,
+      flat: flat,
+      tlon: tlon,
+      tlat: tlat,
+    );
+
+    result.fold(
+      (_) => emit(state.copyWith(
+        status: DistanceMetrixStatus.failure,
+        errorMessage: 'ไม่สามารถคำนวณระยะทางได้',
+      )),      (data) {
+        emit(state.copyWith(
+          status: DistanceMetrixStatus.success,
+          errorMessage: null,
+        ));
+      }
+    );
+
+      
+
   }
 
   /// รีเซ็ตข้อมูลทั้งหมด
