@@ -7,8 +7,8 @@ class ApiConstants {
   /// Run with: flutter run --dart-define=GOOGLE_MAPS_API_KEY=YOUR_KEY
   static const String googleMapsApiKey = String.fromEnvironment(
     'GOOGLE_MAPS_API_KEY',
-    defaultValue: 'AIzaSyDUum3IhwTtcaCKqyyqmwoBoMj9_nHKUcI',
+    defaultValue: '',
   );
 
-  static const String longDoMapApiKey = 'e3f4a0732309117ce0b8aeff4894e902';
+  static const String longDoMapApiKey = '';
 }
