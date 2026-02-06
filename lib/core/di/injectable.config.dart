@@ -46,6 +46,8 @@ import 'package:rider_map_poc/data/services/routes/routes_service_impl.dart'
     as _i211;
 import 'package:rider_map_poc/modules/distance_matrix/cubit/distance_metrix_cubit.dart'
     as _i748;
+import 'package:rider_map_poc/modules/longdo_map/cubit/longdo_map_cubit.dart'
+    as _i200;
 import 'package:rider_map_poc/modules/rider/cubit/rider_cubit.dart' as _i635;
 import 'package:rider_map_poc/modules/rider_map/bloc/rider_map_bloc.dart'
     as _i916;
@@ -96,6 +98,10 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i51.RouteNavigationBloc>(() => _i51.RouteNavigationBloc(
           gh<_i197.GeolocatorService>(),
           gh<_i857.RoutesService>(),
+        ));
+    gh.factory<_i200.LongdoMapCubit>(() => _i200.LongdoMapCubit(
+          gh<_i197.GeolocatorService>(),
+          gh<_i537.AppPermissionStatusService>(),
         ));
     gh.lazySingleton<_i324.HiveEncryption>(() => _i324.HiveEncryption(
           gh<_i744.HiveInterface>(),
