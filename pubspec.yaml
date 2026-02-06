@@ -47,6 +47,7 @@ dependencies:
 
   longdo_maps_api3_flutter: ^1.12.4
   webview_flutter: ^4.13.0
+  swipeable_page_route: ^0.4.4
 
 dev_dependencies:
   flutter_test:

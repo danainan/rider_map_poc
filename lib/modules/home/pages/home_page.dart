@@ -14,12 +14,10 @@ class HomePage extends StatelessWidget {
         backgroundColor: Theme.of(context).colorScheme.primary,
         foregroundColor: Colors.white,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
+      body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const SizedBox(height: 48),
             _MenuCard(
               icon: Icons.map,
               title: 'Rider Map',
@@ -53,8 +51,7 @@ class HomePage extends StatelessWidget {
               title: 'Longdo Map',
               subtitle: 'View Longdo map screen',
               onTap: () => context.push(Routes.longdoMap),
-            ),
-            const Spacer(),         
+            ),   
           ],
         ),
       ),

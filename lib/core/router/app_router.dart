@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -9,6 +11,7 @@ import 'package:rider_map_poc/modules/rider/pages/rider_screen.dart';
 import 'package:rider_map_poc/modules/rider_map/pages/rider_map_page.dart';
 import 'package:rider_map_poc/modules/route_navigation/pages/route_navigation_page.dart';
 import 'package:rider_map_poc/modules/splash/pages/splash_page.dart';
+import 'package:swipeable_page_route/swipeable_page_route.dart';
 
 final GlobalKey<NavigatorState> rootNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'root_navigator');
@@ -88,46 +91,59 @@ final class AppRouter {
     ],
   );
 
-  static CustomTransitionPage<void> _fadeTransitionPage({
+  static Page _fadeTransitionPage({
     required BuildContext context,
     required GoRouterState state,
     required Widget child,
   }) {
-    return CustomTransitionPage<void>(
-      key: state.pageKey,
-      child: child,
-      transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        return FadeTransition(
-          opacity: animation,
-          child: child,
-        );
-      },
-    );
+    return Platform.isIOS
+        ? SwipeablePage(
+            canOnlySwipeFromEdge: true,
+            key: state.pageKey,
+            builder: (context) {
+              return child;
+            },
+          )
+        : CustomTransitionPage(
+            key: state.pageKey,
+            child: child,
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) =>
+                    FadeTransition(
+              opacity: animation,
+              child: child,
+            ),
+          );
   }
 
-  static CustomTransitionPage<void> _slideTransitionPage({
+  static Page _slideTransitionPage({
     required BuildContext context,
     required GoRouterState state,
     required Widget child,
   }) {
-    return CustomTransitionPage<void>(
-      key: state.pageKey,
-      child: child,
-      transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        const begin = Offset(1.0, 0.0);
-        const end = Offset.zero;
-        const curve = Curves.easeInOut;
-
-        var tween = Tween(begin: begin, end: end).chain(
-          CurveTween(curve: curve),
-        );
-
-        return SlideTransition(
-          position: animation.drive(tween),
-          child: child,
-        );
-      },
-    );
+    return Platform.isIOS
+        ? SwipeablePage(
+            canOnlySwipeFromEdge: true,
+            key: state.pageKey,
+            builder: (context) {
+              return child;
+            },
+          )
+        : CustomTransitionPage(
+            key: state.pageKey,
+            child: child,
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) =>
+                    SlideTransition(
+              position: animation.drive(
+                Tween<Offset>(
+                  begin: const Offset(1, 0),
+                  end: Offset.zero,
+                ).chain(CurveTween(curve: Curves.easeIn)),
+              ),
+              child: child,
+            ),
+          );
   }
 }
 
