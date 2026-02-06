@@ -47,6 +47,13 @@ class HomePage extends StatelessWidget {
               subtitle: 'View distance matrix screen',
               onTap: () => context.push(Routes.distanceMatrix),
             ),
+            const SizedBox(height: 16),
+            _MenuCard(
+              icon: Icons.map_outlined,
+              title: 'Longdo Map',
+              subtitle: 'View Longdo map screen',
+              onTap: () => context.push(Routes.longdoMap),
+            ),
             const Spacer(),         
           ],
         ),

@@ -25,12 +25,14 @@ class LongdoMapServiceImpl implements LongdoMapService {
         ),
         queryParameters: {
           'key': ApiConstants.longDoMapApiKey,
-          'flon': flon,
-          'flat': flat,
-          'tlon': tlon,
-          'tlat': tlat,
+          'flon[]': flon,
+          'flat[]': flat,
+          'tlon[]': tlon,
+          'tlat[]': tlat,
           'mode': 't',
           'type': 1,
+          'restrict' : 0,
+          'locale': 'th',
         },
       );
 
