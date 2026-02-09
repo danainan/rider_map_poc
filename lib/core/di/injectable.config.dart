@@ -32,6 +32,10 @@ import 'package:rider_map_poc/data/services/longdo_map/longdo_map_service.dart'
     as _i823;
 import 'package:rider_map_poc/data/services/longdo_map/longdo_map_service_impl.dart'
     as _i177;
+import 'package:rider_map_poc/data/services/longdo_map/longdo_routing_service.dart'
+    as _i855;
+import 'package:rider_map_poc/data/services/longdo_map/longdo_routing_service_impl.dart'
+    as _i969;
 import 'package:rider_map_poc/data/services/permission_status/app_permission_status_service.dart'
     as _i537;
 import 'package:rider_map_poc/data/services/permission_status/app_permission_status_service_impl.dart'
@@ -48,6 +52,10 @@ import 'package:rider_map_poc/modules/distance_matrix/cubit/distance_metrix_cubi
     as _i748;
 import 'package:rider_map_poc/modules/longdo_map/cubit/longdo_map_cubit.dart'
     as _i200;
+import 'package:rider_map_poc/modules/longdo_map_route/cubit/longdo_map_route_cubit.dart'
+    as _i858;
+import 'package:rider_map_poc/modules/longdo_map_ws/cubit/longdo_map_ws_cubit.dart'
+    as _i451;
 import 'package:rider_map_poc/modules/rider/cubit/rider_cubit.dart' as _i635;
 import 'package:rider_map_poc/modules/rider_map/bloc/rider_map_bloc.dart'
     as _i916;
@@ -70,12 +78,11 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i361.Dio>(() => registerModule.dio);
     gh.lazySingleton<_i610.HiveOperation<_i598.AppPermissionStatus>>(
         () => registerModule.appPermissionStatusHiveOperation);
-    gh.factory<_i197.GeolocatorService>(() => _i877.GeolocatorServiceImpl());
     gh.factory<_i857.RoutesService>(() => _i211.RoutesServiceImpl());
     gh.factory<_i460.RiderRouteService>(() => _i277.RiderRouteServiceImpl());
-    gh.factory<_i916.RiderMapBloc>(
-        () => _i916.RiderMapBloc(gh<_i197.GeolocatorService>()));
     gh.factory<_i823.LongdoMapService>(() => _i177.LongdoMapServiceImpl());
+    gh.factory<_i855.LongdoRoutingService>(
+        () => _i969.LongdoRoutingServiceImpl());
     gh.lazySingleton<_i950.PrimitiveDatabase<dynamic>>(
         () => registerModule.secureStorageManager);
     gh.factory<_i537.AppPermissionStatusService>(() =>
@@ -95,26 +102,39 @@ extension GetItInjectableX on _i174.GetIt {
           gh<_i950.PrimitiveDatabase<dynamic>>(),
           hiveEncryption: hiveEncryption,
         ));
+    gh.lazySingleton<_i324.HiveEncryption>(() => _i324.HiveEncryption(
+          gh<_i744.HiveInterface>(),
+          gh<_i950.PrimitiveDatabase<dynamic>>(),
+        ));
+    gh.factory<_i748.DistanceMetrixCubit>(() => _i748.DistanceMetrixCubit(
+          gh<_i1013.DistanceMatrixService>(),
+          gh<_i823.LongdoMapService>(),
+        ));
+    gh.factory<_i197.GeolocatorService>(() =>
+        _i877.GeolocatorServiceImpl(gh<_i537.AppPermissionStatusService>()));
     gh.factory<_i51.RouteNavigationBloc>(() => _i51.RouteNavigationBloc(
           gh<_i197.GeolocatorService>(),
           gh<_i857.RoutesService>(),
+        ));
+    gh.factory<_i451.LongdoMapWsCubit>(() => _i451.LongdoMapWsCubit(
+          gh<_i197.GeolocatorService>(),
+          gh<_i537.AppPermissionStatusService>(),
+          gh<_i855.LongdoRoutingService>(),
         ));
     gh.factory<_i200.LongdoMapCubit>(() => _i200.LongdoMapCubit(
           gh<_i197.GeolocatorService>(),
           gh<_i537.AppPermissionStatusService>(),
         ));
-    gh.lazySingleton<_i324.HiveEncryption>(() => _i324.HiveEncryption(
-          gh<_i744.HiveInterface>(),
-          gh<_i950.PrimitiveDatabase<dynamic>>(),
+    gh.factory<_i858.LongdoMapRouteCubit>(() => _i858.LongdoMapRouteCubit(
+          gh<_i197.GeolocatorService>(),
+          gh<_i537.AppPermissionStatusService>(),
         ));
+    gh.factory<_i916.RiderMapBloc>(
+        () => _i916.RiderMapBloc(gh<_i197.GeolocatorService>()));
     gh.factory<_i635.RiderCubit>(() => _i635.RiderCubit(
           gh<_i197.GeolocatorService>(),
           gh<_i460.RiderRouteService>(),
           gh<_i537.AppPermissionStatusService>(),
-        ));
-    gh.factory<_i748.DistanceMetrixCubit>(() => _i748.DistanceMetrixCubit(
-          gh<_i1013.DistanceMatrixService>(),
-          gh<_i823.LongdoMapService>(),
         ));
     return this;
   }

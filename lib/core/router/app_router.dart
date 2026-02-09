@@ -7,6 +7,8 @@ import 'package:rider_map_poc/core/router/routes.dart';
 import 'package:rider_map_poc/modules/distance_matrix/pages/distance_matrix_screen.dart';
 import 'package:rider_map_poc/modules/home/pages/home_page.dart';
 import 'package:rider_map_poc/modules/longdo_map/pages/longdo_map.dart';
+import 'package:rider_map_poc/modules/longdo_map_route/pages/longdo_map_route_page.dart';
+import 'package:rider_map_poc/modules/longdo_map_ws/pages/longdo_map_ws_page.dart';
 import 'package:rider_map_poc/modules/rider/pages/rider_screen.dart';
 import 'package:rider_map_poc/modules/rider_map/pages/rider_map_page.dart';
 import 'package:rider_map_poc/modules/route_navigation/pages/route_navigation_page.dart';
@@ -86,6 +88,22 @@ final class AppRouter {
           context: context,
           state: state,
           child: const LongDoMapPage(),
+        ),
+      ),
+      GoRoute(
+        path: Routes.longdoMapWs,
+        pageBuilder: (context, state) => _slideTransitionPage(
+          context: context,
+          state: state,
+          child: const LongDoMapWsPage(),
+        ),
+      ),
+      GoRoute(
+        path: Routes.longdoMapRoute,
+        pageBuilder: (context, state) => _slideTransitionPage(
+          context: context,
+          state: state,
+          child: const LongDoMapRoutePage(),
         ),
       ),
     ],

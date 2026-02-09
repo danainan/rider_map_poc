@@ -30,7 +30,7 @@ class _MapWidgetState extends State<MapWidget> {
   }
 
   void _loadLongdoMap() {
-    final String mapHtml = '''
+     String mapHtml = '''
 <!DOCTYPE html>
 <html>
 <head>
@@ -130,18 +130,18 @@ class _MapWidgetState extends State<MapWidget> {
             // Pan map ตาม rider
             map.location({ lon: lon, lat: lat }, true);
 
-            // ค้นหา route ครั้งแรกเท่านั้น (GPS → ร้านค้า → ลูกค้า)
+            // ค้นหา route ครั้งแรกเท่านั้น (Rider → ร้านค้า → ลูกค้า)
             if (!routeSearched) {
                 routeSearched = true;
                 searchRoute(lat, lon);
             }
         }
 
-        // ใช้ Longdo Routing API: จุดเริ่ม(GPS) → ร้านค้า → ลูกค้า
+        // ใช้ Longdo Routing API: Rider(GPS) → ร้านค้า → ลูกค้า
         function searchRoute(lat, lon) {
             map.Route.placeholder(document.getElementById('result'));
 
-            // จุดเริ่มต้น — ตำแหน่ง GPS ปัจจุบัน
+            // จุดที่ 1 — Rider (ตำแหน่ง GPS ปัจจุบัน)
             map.Route.add(new longdo.Marker(
                 { lon: lon, lat: lat },
                 { title: 'Rider', detail: 'จุดเริ่มต้น' }
@@ -158,6 +158,9 @@ class _MapWidgetState extends State<MapWidget> {
                 { lon: ${MockLongdoRouteData.customerLon}, lat: ${MockLongdoRouteData.customerLat} },
                 { title: '${MockLongdoRouteData.customerTitle}', detail: '${MockLongdoRouteData.customerDetail}' }
             ));
+
+            // ตั้งค่าเส้นทางสำหรับมอเตอร์ไซค์
+            map.Route.enableRestrict(longdo.RouteRestrict.Bike, true);
 
             // ค้นหาเส้นทาง
             map.Route.search();

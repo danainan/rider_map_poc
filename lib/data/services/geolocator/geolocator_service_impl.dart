@@ -1,10 +1,15 @@
 import 'package:geolocator/geolocator.dart';
 import 'package:injectable/injectable.dart' as injectable;
+import 'package:rider_map_poc/data/models/permission/permission_request_status.dart';
 import 'package:rider_map_poc/data/services/geolocator/geolocator_service.dart';
+import 'package:rider_map_poc/data/services/permission_status/app_permission_status_service.dart';
+
 
 @injectable.Injectable(as: GeolocatorService)
 class GeolocatorServiceImpl implements GeolocatorService {
-  GeolocatorServiceImpl();
+  GeolocatorServiceImpl(this._appPermissionStatusService);
+
+  final AppPermissionStatusService _appPermissionStatusService;
 
   @override
   Future<bool> isLocationServiceEnabled() async {
@@ -13,38 +18,21 @@ class GeolocatorServiceImpl implements GeolocatorService {
 
   @override
   Future<Position> determinePosition() async {
-    bool serviceEnabled;
-    LocationPermission permission;
-
-    // Check if location services are enabled
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    final serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
       return Future.error('Location services are disabled.');
     }
 
-    // Check current permission status
-    permission = await Geolocator.checkPermission();
-    
-    if (permission == LocationPermission.denied) {
-      // Request permission - this will show the dialog
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        return Future.error('Location permissions are denied.');
-      }
+    final permissionStatus = await _appPermissionStatusService.requestLocationPermission();
+
+    if (permissionStatus == PermissionRequestStatus.granted) {
+      return Geolocator.getCurrentPosition();
+    } else if (permissionStatus == PermissionRequestStatus.denied ||
+        permissionStatus == PermissionRequestStatus.hasDeniedBefore) {
+      return Future.error('Location permissions are denied.');
     }
 
-    if (permission == LocationPermission.deniedForever) {
-      return Future.error(
-        'Location permissions are permanently denied, we cannot request permissions.',
-      );
-    }
-
-    // Permission granted, get position
-    return await Geolocator.getCurrentPosition(
-      locationSettings: const LocationSettings(
-        accuracy: LocationAccuracy.high,
-      ),
-    );
+    return Future.error('Unable to determine location permissions.');
   }
 
   @override
@@ -52,7 +40,7 @@ class GeolocatorServiceImpl implements GeolocatorService {
     return Geolocator.getPositionStream(
       locationSettings: const LocationSettings(
         accuracy: LocationAccuracy.high,
-        distanceFilter: 10, // Update every 10 meters
+        distanceFilter: 5, // Update every 5 meters
       ),
     );
   }
