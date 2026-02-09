@@ -189,8 +189,6 @@ class LongdoMapWsCubit extends Cubit<LongdoMapWsState> {
   Future<void> refreshRoute() async {
     if (state.currentLat == 0 || state.currentLon == 0) return;
     if (state.isRouteLoading) return; // กัน spam ขณะกำลังโหลดอยู่
-    if (_lastCurrentLat == 0 &&
-        _lastCurrentLon == 0) return;
     await _fetchRoute(state.currentLat, state.currentLon);
   }
 
