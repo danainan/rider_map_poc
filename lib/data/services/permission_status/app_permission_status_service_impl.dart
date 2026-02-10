@@ -158,8 +158,6 @@ class AppPermissionStatusServiceImpl implements AppPermissionStatusService {
     PermissionType permissionType,
   ) async {
     final permission = _mapPermissionType(permissionType);
-
-    // 1. เช็ค status ปัจจุบัน
     final status = await permission.status;
 
     // ถ้า granted แล้ว → จบ
@@ -169,20 +167,28 @@ class AppPermissionStatusServiceImpl implements AppPermissionStatusService {
     }
 
     // ถ้า permanentlyDenied → ต้องไปเปิดใน settings
-    // (Android: "Don't ask again" / iOS: denied ครั้งที่สอง)
     if (status == PermissionStatus.permanentlyDenied) {
       await _savePermissionStatus(permissionType, true);
       return PermissionRequestStatus.hasDeniedBefore;
     }
 
-    // 2. เช็คว่าเคย denied มาก่อนหรือยัง (จาก Hive)
+    // status == denied: บน iOS อาจเป็น notDetermined (ครั้งแรก) หรือ denied จริง
+    // เช็คจาก Hive ว่าเคย request ไปแล้วหรือยัง
     final hasDeniedBefore = await _getHasDeniedBefore(permissionType);
+    
+    // ✅ แก้ตรงนี้: ถ้าเคย denied → เช็คว่า OS ยัง allow request ได้ไหม
     if (hasDeniedBefore) {
-      // เคย denied แล้ว → ไม่ request ซ้ำ (OS อาจไม่แสดง dialog)
+      // ลอง request อีกครั้ง เพราะ iOS อาจยัง show dialog ได้
+      // ถ้า OS ไม่ show dialog จะได้ denied กลับมาเร็วมาก
+      final newStatus = await permission.request();
+      if (newStatus == PermissionStatus.granted ||
+          newStatus == PermissionStatus.limited) {
+        return PermissionRequestStatus.granted;
+      }
       return PermissionRequestStatus.hasDeniedBefore;
     }
 
-    // 3. Request permission ครั้งแรก
+    // ❸ ครั้งแรก → request permission
     final newStatus = await permission.request();
 
     switch (newStatus) {
