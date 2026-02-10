@@ -14,4 +14,5 @@ final class Routes {
   static const String longdoMap = '/longdo-map';
   static const String longdoMapWs = '/longdo-map-ws';
   static const String longdoMapRoute = '/longdo-map-route';
+  static const String longdoMapNavigation = '/longdo-map-navigation';
 }

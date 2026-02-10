@@ -44,6 +44,7 @@ dependencies:
   device_info_plus: ^11.2.1
   flutter_form_builder: ^10.0.1
   fpdart: ^1.1.0
+  location: ^8.0.1
 
   longdo_maps_api3_flutter: ^1.12.4
   webview_flutter: ^4.13.0

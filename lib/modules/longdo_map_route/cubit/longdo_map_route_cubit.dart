@@ -20,7 +20,7 @@ class LongdoMapRouteCubit extends Cubit<LongdoMapRouteState> {
   // ตำแหน่งล่าสุดที่สั่ง updateStartPoint → เทียบว่า rider ขยับหรือยัง
   double _lastRouteLat = 0;
   double _lastRouteLon = 0;
-  static const double _routeRefreshDistanceMeters = 50;
+  static const double _routeRefreshDistanceMeters = 10;
 
   LongdoMapRouteCubit(
     this._geolocatorService,
@@ -128,7 +128,7 @@ class LongdoMapRouteCubit extends Cubit<LongdoMapRouteState> {
       (Position position) {
         emit(state.copyWith(
           currentLat: position.latitude,
-          currentLon: position.longitude,         
+          currentLon: position.longitude,
         ));
       },
       onError: (error) {

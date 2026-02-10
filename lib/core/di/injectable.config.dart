@@ -52,6 +52,8 @@ import 'package:rider_map_poc/modules/distance_matrix/cubit/distance_metrix_cubi
     as _i748;
 import 'package:rider_map_poc/modules/longdo_map/cubit/longdo_map_cubit.dart'
     as _i200;
+import 'package:rider_map_poc/modules/longdo_map_navigation/cubit/longdo_map_navigation_cubit.dart'
+    as _i450;
 import 'package:rider_map_poc/modules/longdo_map_route/cubit/longdo_map_route_cubit.dart'
     as _i858;
 import 'package:rider_map_poc/modules/longdo_map_ws/cubit/longdo_map_ws_cubit.dart'
@@ -121,14 +123,20 @@ extension GetItInjectableX on _i174.GetIt {
           gh<_i537.AppPermissionStatusService>(),
           gh<_i855.LongdoRoutingService>(),
         ));
-    gh.factory<_i200.LongdoMapCubit>(() => _i200.LongdoMapCubit(
-          gh<_i197.GeolocatorService>(),
-          gh<_i537.AppPermissionStatusService>(),
-        ));
     gh.factory<_i858.LongdoMapRouteCubit>(() => _i858.LongdoMapRouteCubit(
           gh<_i197.GeolocatorService>(),
           gh<_i537.AppPermissionStatusService>(),
         ));
+    gh.factory<_i200.LongdoMapCubit>(() => _i200.LongdoMapCubit(
+          gh<_i197.GeolocatorService>(),
+          gh<_i537.AppPermissionStatusService>(),
+        ));
+    gh.factory<_i450.LongdoMapNavigationCubit>(
+        () => _i450.LongdoMapNavigationCubit(
+              gh<_i197.GeolocatorService>(),
+              gh<_i537.AppPermissionStatusService>(),
+              gh<_i823.LongdoMapService>(),
+            ));
     gh.factory<_i916.RiderMapBloc>(
         () => _i916.RiderMapBloc(gh<_i197.GeolocatorService>()));
     gh.factory<_i635.RiderCubit>(() => _i635.RiderCubit(
