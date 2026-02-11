@@ -679,6 +679,7 @@ class _LongdoMapNavigationState extends State<LongdoMapNavigation>
   bool _isCameraFollowing = true;
   bool _isRouteDrawn = false;
   bool _isLocationDialogShowing = false;
+  bool _isMapReady = false; 
 
   @override
   void initState() {
@@ -706,11 +707,21 @@ class _LongdoMapNavigationState extends State<LongdoMapNavigation>
   }
 
   void _handleMapReady() async {
+    _isMapReady = true;
     final state = _cubit.state;
+    
     await _controller.runJavaScript(
       'addLocationMarkers(${state.shopLocation.latitude}, ${state.shopLocation.longitude}, ${state.customerLocation.latitude}, ${state.customerLocation.longitude});',
     );
 
+    // ★ ถ้า route พร้อมแล้วตอน map ready → วาดเลย
+    if (state.status == LongdoMapNavigationStatus.routeReady &&
+        state.jsonRoute != null && !_isRouteDrawn) {
+      _isRouteDrawn = true;
+      await _drawRouteOnMap(jsonEncode(state.jsonRoute!.toJson()));
+    }
+
+    // ★ ถ้ามี position แล้ว → แสดง rider เลย
     if (state.currentPosition != null) {
       await _controller.runJavaScript(
         'addRiderMarker(${state.currentPosition!.latitude}, ${state.currentPosition!.longitude});',
@@ -718,13 +729,13 @@ class _LongdoMapNavigationState extends State<LongdoMapNavigation>
     }
   }
 
-  void _drawRouteOnMap(String geoJsonString) {
+  Future<void> _drawRouteOnMap(String geoJsonString) async {
     final escapedJson = geoJsonString
         .replaceAll('\\', '\\\\')
         .replaceAll("'", "\\'")
         .replaceAll('\n', '\\n')
         .replaceAll('\r', '\\r');
-    _controller.runJavaScript("drawRoute('$escapedJson');");
+    await _controller.runJavaScript("drawRoute('$escapedJson');");
   }
 
   void _updateRiderPosition(double lat, double lon) {
@@ -768,36 +779,78 @@ class _LongdoMapNavigationState extends State<LongdoMapNavigation>
       body: BlocProvider.value(
         value: _cubit,
         child: BlocConsumer<LongdoMapNavigationCubit, LongdoMapNavigationState>(
-          listener: (context, state) {
-            // ========== แสดง Location Service Dialog ==========
-            if (state.showLocationServiceDialog &&
-                state.permissionStatus == PermissionRequestStatus.granted) {
-              _showLocationServiceDialog();
-            }
+          // listener: (context, state) {
+          //   // ========== แสดง Location Service Dialog ==========
+          //   if (state.showLocationServiceDialog &&
+          //       state.permissionStatus == PermissionRequestStatus.granted) {
+          //     _showLocationServiceDialog();
+          //   }
 
-            // ========== Route + Position Updates (ไม่ใช้ await เพื่อไม่บล็อก UI) ==========
+          //   // ========== Route + Position Updates (ไม่ใช้ await เพื่อไม่บล็อก UI) ==========
 
-            if (state.status == LongdoMapNavigationStatus.routeLoading) {
-              _isRouteDrawn = false;
-            }
+          //   if (state.status == LongdoMapNavigationStatus.routeLoading) {
+          //     _isRouteDrawn = false;
+          //   }
 
-            // 1. วาดเส้นทาง (ครั้งเดียวต่อ route)
-            if (state.status == LongdoMapNavigationStatus.routeReady &&
-                state.jsonRoute != null &&
-                !_isRouteDrawn) {
-              _isRouteDrawn = true;
-              _drawRouteOnMap(jsonEncode(state.jsonRoute!.toJson()));
-            }
+          //   // 1. วาดเส้นทาง (ครั้งเดียวต่อ route)
+          //   if (_isMapReady && state.status == LongdoMapNavigationStatus.routeReady &&
+          //       state.jsonRoute != null &&
+          //       !_isRouteDrawn) {
+          //     _isRouteDrawn = true;
+              
+          //     _drawRouteOnMap(jsonEncode(state.jsonRoute!.toJson()));
+          //   }
 
-            // 2. อัปเดตตำแหน่ง Rider (ไม่ await เพื่อไม่บล็อก)
-            if (state.currentPosition != null &&
-                state.status == LongdoMapNavigationStatus.routeReady) {
-              _updateRiderPosition(
-                state.currentPosition!.latitude,
-                state.currentPosition!.longitude,
-              );
-            }
-          },
+          //   // 2. อัปเดตตำแหน่ง Rider (ไม่ await เพื่อไม่บล็อก)
+          //   if (_isMapReady && state.currentPosition != null &&
+          //       state.status == LongdoMapNavigationStatus.routeReady) {
+          //     _updateRiderPosition(
+          //       state.currentPosition!.latitude,
+          //       state.currentPosition!.longitude,
+          //     );
+          //   }
+          // },
+          listener: (context, state) async {
+              // Location Service Dialog
+              if (state.showLocationServiceDialog &&
+                  state.permissionStatus == PermissionRequestStatus.granted) {
+                _showLocationServiceDialog();
+              }
+
+              if (!_isMapReady) return; // ← ออกเลยถ้า map ยังไม่พร้อม
+
+              // Reset flag เมื่อเริ่ม loading route ใหม่
+              if (state.status == LongdoMapNavigationStatus.routeLoading) {
+                _isRouteDrawn = false;
+              }
+
+              // 1. วาดเส้นทาง
+              if (state.status == LongdoMapNavigationStatus.routeReady &&
+                  state.jsonRoute != null &&
+                  !_isRouteDrawn) {
+                _isRouteDrawn = true;
+                await _drawRouteOnMap(jsonEncode(state.jsonRoute!.toJson()));
+
+                // ★ หลังวาด route เสร็จ ถ้ามี position อยู่แล้ว → อัพเดท rider ทันที
+                if (state.currentPosition != null) {
+                  _updateRiderPosition(
+                    state.currentPosition!.latitude,
+                    state.currentPosition!.longitude,
+                  );
+                }
+                return; // ไม่ต้องเช็คข้อ 2 อีก เพราะทำไปแล้ว
+              }
+
+              // 2. อัปเดตตำแหน่ง Rider (GPS updates หลังจาก route พร้อมแล้ว)
+              if (state.currentPosition != null &&
+                  state.status == LongdoMapNavigationStatus.routeReady &&
+                  _isRouteDrawn) {
+                _updateRiderPosition(
+                  state.currentPosition!.latitude,
+                  state.currentPosition!.longitude,
+                ); // ★ ไม่ต้อง await — fire and forget
+              }
+            },
           builder: (context, state) {
             // ========== Permission ยังไม่ granted ==========
             if (state.permissionStatus != PermissionRequestStatus.granted) {
