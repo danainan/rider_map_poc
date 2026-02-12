@@ -20,13 +20,16 @@ final class LongdoMapNavigationState extends Equatable {
   const LongdoMapNavigationState({
     this.status = LongdoMapNavigationStatus.initial,
     this.currentPosition,
-    this.shopLocation = const MyPosition(latitude: 7.882843118090549, longitude: 98.4104004642786),
-    this.customerLocation = const MyPosition(latitude: 7.880905644762614, longitude: 98.40977075309326),
+    this.shopLocation = const MyPosition(latitude: 7.882843118090549, longitude: 98.4104004642786), //ยูเนี่ยน
+    this.customerLocation = const MyPosition(latitude: 0.0, longitude: 0.0), //เภสัช
     this.jsonRoute,
     this.permissionStatus = PermissionRequestStatus.initial,
     this.locationServiceStatus = LongDoMapNavigationLocationStatus.initial,
     this.showLocationServiceDialog = false,
     this.remainingDistance = 0,
+    this.allCoordinates = const [],
+    this.polyLineIsPassed = const [],
+    this.destinationCoordinates,
   });
 
   final LongdoMapNavigationStatus status;
@@ -42,8 +45,14 @@ final class LongdoMapNavigationState extends Equatable {
   final LongDoMapNavigationLocationStatus locationServiceStatus;
   final bool showLocationServiceDialog;
 
+  final List<List<double>>? allCoordinates;
+
+  final List<List<double>>? polyLineIsPassed;
+
   /// ระยะทางที่เหลือ (เมตร) — คำนวณโดย JS แล้วส่งกลับมา
   final double remainingDistance;
+
+  final MyPosition? destinationCoordinates;
 
   LongdoMapNavigationState copyWith({
     LongdoMapNavigationStatus? status,
@@ -55,6 +64,9 @@ final class LongdoMapNavigationState extends Equatable {
     LongDoMapNavigationLocationStatus? locationServiceStatus,
     bool? showLocationServiceDialog,
     double? remainingDistance,
+    List<List<double>>? allCoordinates,
+    List<List<double>>? polyLineIsPassed,
+    MyPosition? destinationCoordinates,
   }) {
     return LongdoMapNavigationState(
       status: status ?? this.status,
@@ -66,6 +78,9 @@ final class LongdoMapNavigationState extends Equatable {
       locationServiceStatus: locationServiceStatus ?? this.locationServiceStatus,
       showLocationServiceDialog: showLocationServiceDialog ?? this.showLocationServiceDialog,
       remainingDistance: remainingDistance ?? this.remainingDistance,
+      allCoordinates: allCoordinates ?? this.allCoordinates,
+      polyLineIsPassed: polyLineIsPassed ?? this.polyLineIsPassed,
+      destinationCoordinates: destinationCoordinates ?? this.destinationCoordinates,
     );
   }
 
@@ -80,5 +95,8 @@ final class LongdoMapNavigationState extends Equatable {
         locationServiceStatus,
         showLocationServiceDialog,
         remainingDistance,
+        allCoordinates,
+        polyLineIsPassed,
+        destinationCoordinates,
       ];
 }

@@ -10,6 +10,8 @@ import 'package:rider_map_poc/data/services/permission_status/app_permission_sta
 
 part 'longdo_map_route_state.dart';
 
+//ใช้ สิธีกการ ดึง rouye มาทั้งหมด แล้้ลหา ตำแหน่ง locatiion currwent ว่า ใกล้ กับ จุด rotute มากที่สุด แล้วใช้การวาด สีีเทา ทัยบเส้น เดิม ที่มี route ตรงกัน
+
 @injectable
 class LongdoMapRouteCubit extends Cubit<LongdoMapRouteState> {
   final GeolocatorService _geolocatorService;
